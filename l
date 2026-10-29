@@ -1,6 +1,7 @@
 -- CSGOLib Loadstring Bundle
 -- All 19 modules inlined, require() shimmed via source rewriting
 -- Dep order: topologically sorted (Theme -> Components -> Window -> init)
+-- Type annotations stripped for executor loadstring compatibility
 --
 -- EXECUTOR USAGE:
 --   local CSGOLib = loadstring(game:HttpGet("YOUR_RAW_URL"))()
@@ -10,56 +11,36 @@ local _M = {}
 
 -- [Theme]
 _M["Theme"] = (function()
---[[
-    Theme.lua — CS:GO Classic Theme Configuration
-    Dark charcoal palette with muted orange/amber accents.
-    All visual constants for the entire UI library.
-]]
-
 local Theme = {}
 
--- ── Color Palette ──────────────────────────────────────────────────────────
 Theme.Colors = {
-    -- Backgrounds
     Background      = Color3.fromRGB(18, 18, 18),
     Surface         = Color3.fromRGB(26, 26, 26),
     SurfaceLight    = Color3.fromRGB(34, 34, 34),
     SurfaceHover    = Color3.fromRGB(42, 42, 42),
     SurfaceActive   = Color3.fromRGB(38, 38, 38),
     Panel           = Color3.fromRGB(22, 22, 22),
-
-    -- Borders
     Border          = Color3.fromRGB(48, 48, 48),
     BorderLight     = Color3.fromRGB(58, 58, 58),
     BorderDark      = Color3.fromRGB(35, 35, 35),
-
-    -- Accent (CS:GO orange/amber)
     Accent          = Color3.fromRGB(220, 150, 40),
     AccentDark      = Color3.fromRGB(175, 115, 25),
     AccentHover     = Color3.fromRGB(240, 168, 48),
     AccentDim       = Color3.fromRGB(120, 82, 22),
-
-    -- Text
     Text            = Color3.fromRGB(205, 205, 205),
     TextDim         = Color3.fromRGB(130, 130, 130),
     TextDark        = Color3.fromRGB(85, 85, 85),
     TextBright      = Color3.fromRGB(235, 235, 235),
-
-    -- Status
     Success         = Color3.fromRGB(72, 175, 72),
     Error           = Color3.fromRGB(195, 55, 55),
     Warning         = Color3.fromRGB(210, 170, 35),
     Info            = Color3.fromRGB(70, 140, 210),
-
-    -- ESP specific
     Health          = Color3.fromRGB(75, 195, 75),
     HealthLow       = Color3.fromRGB(195, 55, 55),
     HealthMid       = Color3.fromRGB(210, 170, 35),
     ESPBox          = Color3.fromRGB(220, 150, 40),
     ESPSkeleton     = Color3.fromRGB(255, 255, 255),
-    ESPDistance      = Color3.fromRGB(160, 160, 160),
-
-    -- Misc
+    ESPDistance     = Color3.fromRGB(160, 160, 160),
     White           = Color3.fromRGB(255, 255, 255),
     Black           = Color3.fromRGB(0, 0, 0),
     Transparent     = Color3.fromRGB(0, 0, 0),
@@ -67,7 +48,6 @@ Theme.Colors = {
     ScrollbarHover  = Color3.fromRGB(75, 75, 75),
 }
 
--- ── Typography ─────────────────────────────────────────────────────────────
 Theme.Font = {
     Family      = Enum.Font.Code,
     FamilyUI    = Enum.Font.SourceSans,
@@ -81,7 +61,6 @@ Theme.Font = {
     SizeHeader  = 18,
 }
 
--- ── Spacing ────────────────────────────────────────────────────────────────
 Theme.Spacing = {
     Tiny    = 2,
     Small   = 4,
@@ -92,20 +71,14 @@ Theme.Spacing = {
     XXLarge = 24,
 }
 
--- ── Sizes ──────────────────────────────────────────────────────────────────
 Theme.Sizes = {
-    -- Main window
     WindowWidth     = 680,
     WindowHeight    = 480,
     SidebarWidth    = 120,
     HeaderHeight    = 30,
     FooterHeight    = 20,
-
-    -- Tabs
     TabHeight       = 26,
     TabIndicator    = 2,
-
-    -- Controls
     ControlHeight   = 22,
     ToggleWidth     = 28,
     ToggleHeight    = 14,
@@ -116,31 +89,18 @@ Theme.Sizes = {
     DropdownHeight  = 22,
     KeybindWidth    = 50,
     KeybindHeight   = 18,
-
-    -- Borders
     BorderThickness = 1,
-
-    -- Loader
     LoaderWidth     = 340,
     LoaderHeight    = 380,
-
-    -- ESP Preview
     PreviewWidth    = 220,
     PreviewHeight   = 280,
-
-    -- Scrollbar
     ScrollbarWidth  = 4,
-
-    -- Notification
     NotifWidth      = 260,
     NotifHeight     = 36,
-
-    -- Color picker
     ColorPickerSize = 150,
     HueBarWidth     = 16,
 }
 
--- ── Animation ──────────────────────────────────────────────────────────────
 Theme.Animation = {
     Fast        = 0.1,
     Normal      = 0.18,
@@ -152,7 +112,6 @@ Theme.Animation = {
     EaseInOut   = Enum.EasingDirection.InOut,
 }
 
--- ── Corner Radius ──────────────────────────────────────────────────────────
 Theme.Corner = {
     None    = UDim.new(0, 0),
     Tiny    = UDim.new(0, 1),
@@ -160,7 +119,6 @@ Theme.Corner = {
     Normal  = UDim.new(0, 3),
 }
 
--- ── Utility: Create a themed instance ──────────────────────────────────────
 function Theme.Create(className, properties)
     local instance = Instance.new(className)
     for prop, value in pairs(properties) do
@@ -179,8 +137,7 @@ function Theme.Create(className, properties)
     return instance
 end
 
--- ── Utility: Apply border to a frame ───────────────────────────────────────
-function Theme.ApplyBorder(frame, color?)
+function Theme.ApplyBorder(frame, color)
     local stroke = Instance.new("UIStroke")
     stroke.Color = color or Theme.Colors.Border
     stroke.Thickness = Theme.Sizes.BorderThickness
@@ -189,16 +146,14 @@ function Theme.ApplyBorder(frame, color?)
     return stroke
 end
 
--- ── Utility: Apply corner radius ───────────────────────────────────────────
-function Theme.ApplyCorner(frame, radius: UDim?)
+function Theme.ApplyCorner(frame, radius)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = radius or Theme.Corner.Tiny
     corner.Parent = frame
     return corner
 end
 
--- ── Utility: Apply padding ─────────────────────────────────────────────────
-function Theme.ApplyPadding(frame, top?, bottom?, left?, right?)
+function Theme.ApplyPadding(frame, top, bottom, left, right)
     local padding = Instance.new("UIPadding")
     padding.PaddingTop = UDim.new(0, top or 0)
     padding.PaddingBottom = UDim.new(0, bottom or 0)
@@ -208,8 +163,7 @@ function Theme.ApplyPadding(frame, top?, bottom?, left?, right?)
     return padding
 end
 
--- ── Utility: Apply list layout ─────────────────────────────────────────────
-function Theme.ApplyListLayout(frame, padding?, direction: Enum.FillDirection?, hAlign: Enum.HorizontalAlignment?, vAlign: Enum.VerticalAlignment?)
+function Theme.ApplyListLayout(frame, padding, direction, hAlign, vAlign)
     local layout = Instance.new("UIListLayout")
     layout.Padding = UDim.new(0, padding or Theme.Spacing.Small)
     layout.FillDirection = direction or Enum.FillDirection.Vertical
@@ -221,36 +175,25 @@ function Theme.ApplyListLayout(frame, padding?, direction: Enum.FillDirection?, 
 end
 
 return Theme
-
 end)()
 
 -- [Utils_Config]
 _M["Utils_Config"] = (function()
---[[
-    Config.lua — Configuration save/load system.
-    Supports named configs with serialization to JSON.
-    Uses appropriate persistence for the target environment.
-]]
-
 local HttpService = game:GetService("HttpService")
 
 local Config = {}
 Config.__index = Config
 
--- Storage backends
 local BACKENDS = {
-    FILE = "file",          -- writefile/readfile (executor environments)
-    DATASTORE = "datastore", -- DataStoreService (studio / server)
-    MEMORY = "memory",       -- In-memory only (fallback)
+    FILE     = "file",
+    DATASTORE = "datastore",
+    MEMORY   = "memory",
 }
 
---- Detect available storage backend
 local function detectBackend()
-    -- Check for executor file functions
     if typeof(writefile) == "function" and typeof(readfile) == "function" then
         return BACKENDS.FILE
     end
-    -- Check for DataStoreService access
     local ok = pcall(function()
         return game:GetService("DataStoreService")
     end)
@@ -260,35 +203,31 @@ local function detectBackend()
     return BACKENDS.MEMORY
 end
 
---- Create a new Config manager
-function Config.new(prefix?)
+function Config.new(prefix)
     local self = setmetatable({}, Config)
     self._prefix = prefix or "CSGOLib"
     self._backend = detectBackend()
-    self._memoryStore = {}  -- fallback in-memory storage
-    self._defaults = {}     -- registered default values
-    self._values = {}       -- current values
-    self._callbacks = {}    -- change callbacks
+    self._memoryStore = {}
+    self._defaults = {}
+    self._values = {}
+    self._callbacks = {}
     return self
 end
 
---- Register a default value for a key
-function Config:SetDefault(key, value: any)
+function Config:SetDefault(key, value)
     self._defaults[key] = value
     if self._values[key] == nil then
         self._values[key] = value
     end
 end
 
---- Register multiple defaults
 function Config:SetDefaults(defaults)
     for key, value in pairs(defaults) do
         self:SetDefault(key, value)
     end
 end
 
---- Get a config value
-function Config:Get(key): any
+function Config:Get(key)
     local value = self._values[key]
     if value == nil then
         return self._defaults[key]
@@ -296,11 +235,9 @@ function Config:Get(key): any
     return value
 end
 
---- Set a config value
-function Config:Set(key, value: any)
+function Config:Set(key, value)
     local old = self._values[key]
     self._values[key] = value
-    -- Fire callbacks
     if self._callbacks[key] then
         for _, cb in ipairs(self._callbacks[key]) do
             task.spawn(cb, value, old)
@@ -308,34 +245,28 @@ function Config:Set(key, value: any)
     end
 end
 
---- Listen for value changes on a key
-function Config:OnChanged(key, callback: (new: any, old: any) -> ()): () -> ()
+function Config:OnChanged(key, callback)
     if not self._callbacks[key] then
         self._callbacks[key] = {}
     end
     table.insert(self._callbacks[key], callback)
-
-    -- Return unsubscribe function
     local idx = #self._callbacks[key]
     return function()
         table.remove(self._callbacks[key], idx)
     end
 end
 
---- Reset all values to defaults
 function Config:ResetDefaults()
     for key, default in pairs(self._defaults) do
         self:Set(key, default)
     end
 end
 
---- Get all current values as a serializable table
-function Config:GetAll(): {[string]: any}
+function Config:GetAll()
     local result = {}
     for key, value in pairs(self._defaults) do
         result[key] = self._values[key] ~= nil and self._values[key] or value
     end
-    -- Include non-default keys too
     for key, value in pairs(self._values) do
         if result[key] == nil then
             result[key] = value
@@ -344,13 +275,10 @@ function Config:GetAll(): {[string]: any}
     return result
 end
 
---- Load values from a table (e.g., from deserialized JSON)
 function Config:LoadFromTable(data)
     if type(data) ~= "table" then return end
     for key, value in pairs(data) do
-        -- Validate: only load keys that have registered defaults or already exist
         if self._defaults[key] ~= nil or self._values[key] ~= nil then
-            -- Type check against default
             local default = self._defaults[key]
             if default == nil or typeof(value) == typeof(default) then
                 self:Set(key, value)
@@ -359,8 +287,7 @@ function Config:LoadFromTable(data)
     end
 end
 
---- Serialize Color3 values for JSON (Color3 isn't JSON-serializable)
-local function serializeValue(value: any): any
+local function serializeValue(value)
     if typeof(value) == "Color3" then
         return {__type = "Color3", r = math.floor(value.R * 255), g = math.floor(value.G * 255), b = math.floor(value.B * 255)}
     elseif typeof(value) == "EnumItem" then
@@ -375,7 +302,7 @@ local function serializeValue(value: any): any
     return value
 end
 
-local function deserializeValue(value: any): any
+local function deserializeValue(value)
     if type(value) == "table" then
         if value.__type == "Color3" then
             return Color3.fromRGB(value.r, value.g, value.b)
@@ -395,20 +322,16 @@ local function deserializeValue(value: any): any
     return value
 end
 
---- Get file path for a config name
 function Config:_getFilePath(name)
     return string.format("%s_%s.json", self._prefix, name)
 end
 
---- Save current config to a named slot
-function Config:Save(name): (boolean, string?)
+function Config:Save(name)
     local data = {}
     for key, value in pairs(self:GetAll()) do
         data[key] = serializeValue(value)
     end
-
     local json = HttpService:JSONEncode(data)
-
     if self._backend == BACKENDS.FILE then
         local ok, err = pcall(function()
             writefile(self:_getFilePath(name), json)
@@ -421,14 +344,11 @@ function Config:Save(name): (boolean, string?)
         self._memoryStore[name] = json
         return true, nil
     end
-
     return false, "Unsupported backend"
 end
 
---- Load a named config
-function Config:Load(name): (boolean, string?)
-    local json?
-
+function Config:Load(name)
+    local json
     if self._backend == BACKENDS.FILE then
         local ok, result = pcall(function()
             return readfile(self:_getFilePath(name))
@@ -445,25 +365,20 @@ function Config:Load(name): (boolean, string?)
     else
         return false, "Unsupported backend"
     end
-
     local ok, data = pcall(function()
         return HttpService:JSONDecode(json)
     end)
     if not ok or type(data) ~= "table" then
         return false, "Invalid config data"
     end
-
-    -- Deserialize special types
     for key, value in pairs(data) do
         data[key] = deserializeValue(value)
     end
-
     self:LoadFromTable(data)
     return true, nil
 end
 
---- List available config names (file backend only)
-function Config:ListConfigs(): {string}
+function Config:ListConfigs()
     local configs = {}
     if self._backend == BACKENDS.FILE then
         local ok, files = pcall(function()
@@ -485,8 +400,7 @@ function Config:ListConfigs(): {string}
     return configs
 end
 
---- Delete a named config
-function Config:Delete(name): (boolean, string?)
+function Config:Delete(name)
     if self._backend == BACKENDS.FILE then
         local ok, err = pcall(function()
             delfile(self:_getFilePath(name))
@@ -500,32 +414,21 @@ function Config:Delete(name): (boolean, string?)
 end
 
 return Config
-
 end)()
 
 -- [Utils_Draggable]
 _M["Utils_Draggable"] = (function()
---[[
-    Draggable.lua — Smooth window dragging utility.
-    Makes a frame draggable by its header without interfering with child controls.
-]]
-
 local UserInputService = game:GetService("UserInputService")
 
 local Draggable = {}
 
---- Make a frame draggable via a designated handle region
---- @param frame Frame — The frame to move
---- @param handle GuiObject — The area that captures drag input (e.g., header bar)
---- @return function — Call to disconnect and stop dragging
-function Draggable.Enable(frame, handle): () -> ()
+function Draggable.Enable(frame, handle)
     local dragging = false
     local dragStart = Vector3.zero
     local startPos = frame.Position
-
     local connections = {}
 
-    connections[1] = handle.InputBegan:Connect(function(input: InputObject)
+    connections[1] = handle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or
            input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
@@ -539,14 +442,14 @@ function Draggable.Enable(frame, handle): () -> ()
         end
     end)
 
-    connections[2] = handle.InputEnded:Connect(function(input: InputObject)
+    connections[2] = handle.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or
            input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
     end)
 
-    connections[3] = UserInputService.InputChanged:Connect(function(input: InputObject)
+    connections[3] = UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or
                          input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
@@ -557,7 +460,6 @@ function Draggable.Enable(frame, handle): () -> ()
         end
     end)
 
-    -- Return cleanup function
     return function()
         dragging = false
         for _, conn in ipairs(connections) do
@@ -567,25 +469,16 @@ function Draggable.Enable(frame, handle): () -> ()
 end
 
 return Draggable
-
 end)()
 
 -- [Utils_Animation]
 _M["Utils_Animation"] = (function()
---[[
-    Animation.lua — TweenService wrapper for consistent, restrained animations.
-    Provides short-hand tween creation with theme-aware defaults.
-]]
-
 local TweenService = game:GetService("TweenService")
 
 local Animation = {}
-
--- Cache tween info objects to avoid repeated creation
 local _tweenInfoCache = {}
 
---- Get or create a TweenInfo with the given parameters
-function Animation.GetTweenInfo(duration?, easeStyle: Enum.EasingStyle?, easeDirection: Enum.EasingDirection?)
+function Animation.GetTweenInfo(duration, easeStyle, easeDirection)
     local d = duration or 0.18
     local s = easeStyle or Enum.EasingStyle.Quad
     local dir = easeDirection or Enum.EasingDirection.Out
@@ -596,43 +489,37 @@ function Animation.GetTweenInfo(duration?, easeStyle: Enum.EasingStyle?, easeDir
     return _tweenInfoCache[key]
 end
 
---- Tween an instance's properties smoothly
-function Animation.Tween(instance, properties: {[string]: any}, duration?, easeStyle: Enum.EasingStyle?, easeDirection: Enum.EasingDirection?)
+function Animation.Tween(instance, properties, duration, easeStyle, easeDirection)
     local info = Animation.GetTweenInfo(duration, easeStyle, easeDirection)
     local tween = TweenService:Create(instance, info, properties)
     tween:Play()
     return tween
 end
 
---- Fade in: animate BackgroundTransparency from 1 to target
-function Animation.FadeIn(instance, duration?, targetTransparency?)
+function Animation.FadeIn(instance, duration, targetTransparency)
     local target = targetTransparency or 0
     instance.BackgroundTransparency = 1
     return Animation.Tween(instance, {BackgroundTransparency = target}, duration or 0.3)
 end
 
---- Fade out: animate BackgroundTransparency to 1
-function Animation.FadeOut(instance, duration?)
+function Animation.FadeOut(instance, duration)
     return Animation.Tween(instance, {BackgroundTransparency = 1}, duration or 0.3)
 end
 
---- Fade text/image transparency
-function Animation.FadeTextIn(instance | TextButton, duration?)
+function Animation.FadeTextIn(instance, duration)
     instance.TextTransparency = 1
     return Animation.Tween(instance, {TextTransparency = 0}, duration or 0.25)
 end
 
-function Animation.FadeTextOut(instance | TextButton, duration?)
+function Animation.FadeTextOut(instance, duration)
     return Animation.Tween(instance, {TextTransparency = 1}, duration or 0.25)
 end
 
---- Fade entire group (using GroupTransparency on a CanvasGroup or manual traversal)
-function Animation.FadeGroupIn(container, duration?)
+function Animation.FadeGroupIn(container, duration)
     if container:IsA("CanvasGroup") then
         container.GroupTransparency = 1
         return Animation.Tween(container, {GroupTransparency = 0}, duration or 0.35)
     end
-    -- Fallback: fade individual children
     for _, child in ipairs(container:GetDescendants()) do
         if child:IsA("GuiObject") then
             Animation.FadeIn(child, duration)
@@ -641,7 +528,7 @@ function Animation.FadeGroupIn(container, duration?)
     return nil
 end
 
-function Animation.FadeGroupOut(container, duration?)
+function Animation.FadeGroupOut(container, duration)
     if container:IsA("CanvasGroup") then
         return Animation.Tween(container, {GroupTransparency = 1}, duration or 0.3)
     end
@@ -653,14 +540,12 @@ function Animation.FadeGroupOut(container, duration?)
     return nil
 end
 
---- Slide in from offset
-function Animation.SlideIn(instance, fromOffset, toPosition, duration?)
+function Animation.SlideIn(instance, fromOffset, toPosition, duration)
     instance.Position = fromOffset
     return Animation.Tween(instance, {Position = toPosition}, duration or 0.25)
 end
 
---- Hover color effect
-function Animation.HoverColor(instance, hoverColor, normalColor, duration?)
+function Animation.HoverColor(instance, hoverColor, normalColor, duration)
     local d = duration or 0.1
     instance.MouseEnter:Connect(function()
         Animation.Tween(instance, {BackgroundColor3 = hoverColor}, d)
@@ -670,8 +555,7 @@ function Animation.HoverColor(instance, hoverColor, normalColor, duration?)
     end)
 end
 
---- Hover text color effect
-function Animation.HoverTextColor(instance | TextButton, hoverColor, normalColor, duration?)
+function Animation.HoverTextColor(instance, hoverColor, normalColor, duration)
     local d = duration or 0.1
     instance.MouseEnter:Connect(function()
         Animation.Tween(instance, {TextColor3 = hoverColor}, d)
@@ -681,14 +565,11 @@ function Animation.HoverTextColor(instance | TextButton, hoverColor, normalColor
     end)
 end
 
---- Simple pulse (subtle size or transparency pulse)
-function Animation.Pulse(instance, property, valueA: any, valueB: any, duration?)
+function Animation.Pulse(instance, property, valueA, valueB, duration)
     local d = duration or 0.5
     local tweenA = TweenService:Create(instance, Animation.GetTweenInfo(d, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {[property] = valueA})
     local tweenB = TweenService:Create(instance, Animation.GetTweenInfo(d, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {[property] = valueB})
-
     local running = true
-    local connection
 
     tweenA.Completed:Connect(function()
         if running then tweenB:Play() end
@@ -698,7 +579,6 @@ function Animation.Pulse(instance, property, valueA: any, valueB: any, duration?
     end)
     tweenA:Play()
 
-    -- Return a stop function
     return function()
         running = false
         tweenA:Cancel()
@@ -706,8 +586,7 @@ function Animation.Pulse(instance, property, valueA: any, valueB: any, duration?
     end
 end
 
---- Loading spinner dots animation
-function Animation.LoadingDots(label, baseText, interval?)
+function Animation.LoadingDots(label, baseText, interval)
     local int = interval or 0.4
     local dotCount = 0
     local running = true
@@ -727,25 +606,10 @@ function Animation.LoadingDots(label, baseText, interval?)
 end
 
 return Animation
-
 end)()
 
 -- [Components_Button]
 _M["Components_Button"] = (function()
---[[
-    Button.lua
-    CS:GO-style rectangular button with thin border.
-    Part of CSGOLib UI Library.
-
-    Usage:
-        local button = Button.new(parent, {
-            Name = "Apply Settings",
-            Callback = function() end,
-            Width = 120,
-            Description = "Optional tooltip text",
-        })
-]]
-
 local TweenService = game:GetService("TweenService")
 local Theme = _M["Theme"]
 
@@ -765,7 +629,6 @@ function Button.new(parent, config)
         totalHeight = totalHeight + Theme.Font.SizeTiny + Theme.Spacing.Tiny
     end
 
-    -- Root frame
     self.Frame = Theme.Create("Frame", {
         Name = "Button_" .. config.Name,
         Size = config.Width and UDim2.new(0, config.Width, 0, totalHeight) or UDim2.new(1, 0, 0, totalHeight),
@@ -773,7 +636,6 @@ function Button.new(parent, config)
         Parent = parent,
     })
 
-    -- Button body
     local buttonFrame = Theme.Create("TextButton", {
         Name = "ButtonBody",
         Size = config.Width and UDim2.new(0, config.Width, 0, Theme.Sizes.ButtonHeight) or UDim2.new(1, 0, 0, Theme.Sizes.ButtonHeight),
@@ -791,7 +653,6 @@ function Button.new(parent, config)
     Theme.ApplyBorder(buttonFrame, Theme.Colors.Border)
     self._buttonFrame = buttonFrame
 
-    -- Description text below button
     if hasDescription then
         Theme.Create("TextLabel", {
             Name = "Description",
@@ -808,51 +669,33 @@ function Button.new(parent, config)
         })
     end
 
-    -- Tween info
-    local tweenFast = TweenInfo.new(
-        Theme.Animation.Fast,
-        Theme.Animation.EaseStyle,
-        Theme.Animation.EaseOut
-    )
+    local tweenFast = TweenInfo.new(Theme.Animation.Fast, Theme.Animation.EaseStyle, Theme.Animation.EaseOut)
 
-    -- Hover effect
     table.insert(self._connections, buttonFrame.MouseEnter:Connect(function()
         if not self._pressing then
-            TweenService:Create(buttonFrame, tweenFast, {
-                BackgroundColor3 = Theme.Colors.SurfaceHover,
-            }):Play()
+            TweenService:Create(buttonFrame, tweenFast, {BackgroundColor3 = Theme.Colors.SurfaceHover}):Play()
             buttonFrame.TextColor3 = Theme.Colors.TextBright
         end
     end))
 
     table.insert(self._connections, buttonFrame.MouseLeave:Connect(function()
         self._pressing = false
-        TweenService:Create(buttonFrame, tweenFast, {
-            BackgroundColor3 = Theme.Colors.SurfaceLight,
-        }):Play()
+        TweenService:Create(buttonFrame, tweenFast, {BackgroundColor3 = Theme.Colors.SurfaceLight}):Play()
         buttonFrame.TextColor3 = Theme.Colors.Text
     end))
 
-    -- Press feedback
     table.insert(self._connections, buttonFrame.MouseButton1Down:Connect(function()
         self._pressing = true
-        TweenService:Create(buttonFrame, tweenFast, {
-            BackgroundColor3 = Theme.Colors.SurfaceActive,
-        }):Play()
+        TweenService:Create(buttonFrame, tweenFast, {BackgroundColor3 = Theme.Colors.SurfaceActive}):Play()
     end))
 
     table.insert(self._connections, buttonFrame.MouseButton1Up:Connect(function()
         self._pressing = false
-        TweenService:Create(buttonFrame, tweenFast, {
-            BackgroundColor3 = Theme.Colors.SurfaceHover,
-        }):Play()
+        TweenService:Create(buttonFrame, tweenFast, {BackgroundColor3 = Theme.Colors.SurfaceHover}):Play()
     end))
 
-    -- Click handler
     table.insert(self._connections, buttonFrame.MouseButton1Click:Connect(function()
-        if self._callback then
-            self._callback()
-        end
+        if self._callback then self._callback() end
     end))
 
     return self
@@ -878,17 +721,10 @@ function Button:Destroy()
 end
 
 return Button
-
 end)()
 
 -- [Components_ColorPicker]
 _M["Components_ColorPicker"] = (function()
---[[
-    ColorPicker.lua
-    Compact color selector with SV canvas, hue bar, RGB/Hex inputs.
-    Part of CSGOLib UI Library.
-]]
-
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Theme = _M["Theme"]
@@ -896,17 +732,14 @@ local Theme = _M["Theme"]
 local ColorPicker = {}
 ColorPicker.__index = ColorPicker
 
--- Utility: HSV to Color3
 local function hsvToColor3(h, s, v)
     return Color3.fromHSV(math.clamp(h, 0, 1), math.clamp(s, 0, 1), math.clamp(v, 0, 1))
 end
 
--- Utility to hex string
 local function color3ToHex(c)
     return string.format("#%02X%02X%02X", math.round(c.R * 255), math.round(c.G * 255), math.round(c.B * 255))
 end
 
--- Utility: hex string to Color3
 local function hexToColor3(hex)
     hex = hex:gsub("#", "")
     if #hex ~= 6 then return nil end
@@ -926,7 +759,6 @@ function ColorPicker.new(parent, config)
     self._draggingSV = false
     self._draggingHue = false
 
-    -- Initialize HSV from default color
     local defaultColor = config.Default or Color3.fromRGB(220, 150, 40)
     local h, s, v = defaultColor:ToHSV()
     self._hue = h
@@ -937,7 +769,6 @@ function ColorPicker.new(parent, config)
     local canvasSize = Theme.Sizes.ColorPickerSize
     local hueBarWidth = Theme.Sizes.HueBarWidth
 
-    -- Row container: label + preview
     local row = Theme.Create("Frame", {
         Name = "ColorPicker_" .. config.Name,
         Size = UDim2.new(1, 0, 0, Theme.Sizes.ControlHeight),
@@ -946,8 +777,7 @@ function ColorPicker.new(parent, config)
     })
     self.Frame = row
 
-    -- Label
-    local label = Theme.Create("TextLabel", {
+    Theme.Create("TextLabel", {
         Name = "Label",
         Size = UDim2.new(1, -24, 1, 0),
         Position = UDim2.new(0, 0, 0, 0),
@@ -961,7 +791,6 @@ function ColorPicker.new(parent, config)
         Parent = row,
     })
 
-    -- Color preview square
     local preview = Theme.Create("Frame", {
         Name = "Preview",
         Size = UDim2.new(0, 16, 0, 16),
@@ -973,7 +802,6 @@ function ColorPicker.new(parent, config)
     Theme.ApplyBorder(preview, Theme.Colors.Border)
     self._preview = preview
 
-    -- Preview click button
     local previewBtn = Theme.Create("TextButton", {
         Name = "PreviewBtn",
         Size = UDim2.new(1, 0, 1, 0),
@@ -982,7 +810,6 @@ function ColorPicker.new(parent, config)
         Parent = preview,
     })
 
-    -- ===== PICKER PANEL (absolute, high ZIndex) =====
     local panel = Theme.Create("Frame", {
         Name = "Panel",
         Size = UDim2.new(0, canvasSize + hueBarWidth + Theme.Spacing.Small + Theme.Spacing.Medium * 2,
@@ -1000,7 +827,6 @@ function ColorPicker.new(parent, config)
     Theme.ApplyPadding(panel, Theme.Spacing.Medium, Theme.Spacing.Medium, Theme.Spacing.Medium, Theme.Spacing.Medium)
     self._panel = panel
 
-    -- ===== SV CANVAS =====
     local svCanvas = Theme.Create("Frame", {
         Name = "SVCanvas",
         Size = UDim2.new(0, canvasSize, 0, canvasSize),
@@ -1013,7 +839,6 @@ function ColorPicker.new(parent, config)
     })
     self._svCanvas = svCanvas
 
-    -- White gradient overlay (left white → right transparent)
     local whiteOverlay = Theme.Create("Frame", {
         Name = "WhiteOverlay",
         Size = UDim2.new(1, 0, 1, 0),
@@ -1022,14 +847,13 @@ function ColorPicker.new(parent, config)
         ZIndex = 102,
         Parent = svCanvas,
     })
-    local whiteGradient = Theme.Create("UIGradient", {
+    Theme.Create("UIGradient", {
         Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.new(1, 1, 1)),
         Transparency = NumberSequence.new(0, 1),
         Rotation = 0,
         Parent = whiteOverlay,
     })
 
-    -- Black gradient overlay (top transparent → bottom black)
     local blackOverlay = Theme.Create("Frame", {
         Name = "BlackOverlay",
         Size = UDim2.new(1, 0, 1, 0),
@@ -1038,14 +862,13 @@ function ColorPicker.new(parent, config)
         ZIndex = 103,
         Parent = svCanvas,
     })
-    local blackGradient = Theme.Create("UIGradient", {
+    Theme.Create("UIGradient", {
         Color = ColorSequence.new(Color3.new(0, 0, 0), Color3.new(0, 0, 0)),
         Transparency = NumberSequence.new(1, 0),
         Rotation = 90,
         Parent = blackOverlay,
     })
 
-    -- SV selector indicator
     local svIndicator = Theme.Create("Frame", {
         Name = "Indicator",
         Size = UDim2.new(0, 8, 0, 8),
@@ -1070,7 +893,6 @@ function ColorPicker.new(parent, config)
     Theme.ApplyBorder(svIndicatorInner, Color3.new(0, 0, 0))
     self._svIndicator = svIndicator
 
-    -- SV canvas input
     local svButton = Theme.Create("TextButton", {
         Name = "Input",
         Size = UDim2.new(1, 0, 1, 0),
@@ -1080,7 +902,6 @@ function ColorPicker.new(parent, config)
         Parent = svCanvas,
     })
 
-    -- ===== HUE BAR =====
     local hueBar = Theme.Create("Frame", {
         Name = "HueBar",
         Size = UDim2.new(0, hueBarWidth, 0, canvasSize),
@@ -1094,8 +915,7 @@ function ColorPicker.new(parent, config)
     Theme.ApplyBorder(hueBar, Theme.Colors.Border)
     self._hueBar = hueBar
 
-    -- Rainbow gradient for hue bar
-    local hueGradient = Theme.Create("UIGradient", {
+    Theme.Create("UIGradient", {
         Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0.000, Color3.fromRGB(255, 0, 0)),
             ColorSequenceKeypoint.new(0.167, Color3.fromRGB(255, 255, 0)),
@@ -1109,7 +929,6 @@ function ColorPicker.new(parent, config)
         Parent = hueBar,
     })
 
-    -- Hue bar indicator
     local hueIndicator = Theme.Create("Frame", {
         Name = "HueIndicator",
         Size = UDim2.new(1, 2, 0, 3),
@@ -1123,7 +942,6 @@ function ColorPicker.new(parent, config)
     Theme.ApplyBorder(hueIndicator, Color3.new(0, 0, 0))
     self._hueIndicator = hueIndicator
 
-    -- Hue bar input
     local hueButton = Theme.Create("TextButton", {
         Name = "Input",
         Size = UDim2.new(1, 0, 1, 0),
@@ -1133,7 +951,6 @@ function ColorPicker.new(parent, config)
         Parent = hueBar,
     })
 
-    -- ===== RGB INPUTS =====
     local rgbRow = Theme.Create("Frame", {
         Name = "RGBRow",
         Size = UDim2.new(0, canvasSize + hueBarWidth + Theme.Spacing.Small, 0, 22),
@@ -1149,8 +966,7 @@ function ColorPicker.new(parent, config)
 
     for i, ch in ipairs(rgbLabels) do
         local xPos = (i - 1) * (boxWidth + Theme.Spacing.Small)
-
-        local rgbLabel = Theme.Create("TextLabel", {
+        Theme.Create("TextLabel", {
             Name = ch .. "Label",
             Size = UDim2.new(0, 12, 0, 22),
             Position = UDim2.new(0, xPos, 0, 0),
@@ -1164,7 +980,6 @@ function ColorPicker.new(parent, config)
             ZIndex = 102,
             Parent = rgbRow,
         })
-
         local rgbBox = Theme.Create("TextBox", {
             Name = ch .. "Box",
             Size = UDim2.new(0, boxWidth - 14, 0, 18),
@@ -1185,7 +1000,6 @@ function ColorPicker.new(parent, config)
     end
     self._rgbBoxes = rgbBoxes
 
-    -- ===== HEX INPUT =====
     local hexRow = Theme.Create("Frame", {
         Name = "HexRow",
         Size = UDim2.new(0, canvasSize + hueBarWidth + Theme.Spacing.Small, 0, 22),
@@ -1195,7 +1009,7 @@ function ColorPicker.new(parent, config)
         Parent = panel,
     })
 
-    local hexLabel = Theme.Create("TextLabel", {
+    Theme.Create("TextLabel", {
         Name = "HexLabel",
         Size = UDim2.new(0, 20, 0, 22),
         Position = UDim2.new(0, 0, 0, 0),
@@ -1228,7 +1042,6 @@ function ColorPicker.new(parent, config)
     Theme.ApplyBorder(hexBox, Theme.Colors.Border)
     self._hexBox = hexBox
 
-    -- ===== APPLY BUTTON =====
     local applyBtn = Theme.Create("TextButton", {
         Name = "ApplyBtn",
         Size = UDim2.new(0, 50, 0, 18),
@@ -1245,41 +1058,27 @@ function ColorPicker.new(parent, config)
     })
     Theme.ApplyCorner(applyBtn, Theme.Corner.Tiny)
 
-    -- ===== Internal update helpers =====
     local function updateColorDisplay()
         local color = hsvToColor3(self._hue, self._sat, self._val)
         self._currentColor = color
         self._preview.BackgroundColor3 = color
-
-        -- Update SV canvas hue background
         svCanvas.BackgroundColor3 = hsvToColor3(self._hue, 1, 1)
-
-        -- Update SV indicator position
         svIndicator.Position = UDim2.new(self._sat, 0, 1 - self._val, 0)
-
-        -- Update hue indicator position
         hueIndicator.Position = UDim2.new(0.5, 0, self._hue, 0)
-
-        -- Update RGB boxes
         local r = math.round(color.R * 255)
         local g = math.round(color.G * 255)
         local b = math.round(color.B * 255)
         rgbBoxes[1].Text = tostring(r)
         rgbBoxes[2].Text = tostring(g)
         rgbBoxes[3].Text = tostring(b)
-
-        -- Update hex box
         hexBox.Text = color3ToHex(color):sub(2)
     end
 
     local function fireCallback()
-        if self._callback then
-            self._callback(self._currentColor)
-        end
+        if self._callback then self._callback(self._currentColor) end
     end
 
-    -- ===== SV Canvas Interaction =====
-    local function updateSVFromInput(input: InputObject)
+    local function updateSVFromInput(input)
         local absPos = svCanvas.AbsolutePosition
         local absSize = svCanvas.AbsoluteSize
         local relX = math.clamp((input.Position.X - absPos.X) / absSize.X, 0, 1)
@@ -1301,8 +1100,7 @@ function ColorPicker.new(parent, config)
         end
     end))
 
-    -- ===== Hue Bar Interaction =====
-    local function updateHueFromInput(input: InputObject)
+    local function updateHueFromInput(input)
         local absPos = hueBar.AbsolutePosition
         local absSize = hueBar.AbsoluteSize
         local relY = math.clamp((input.Position.Y - absPos.Y) / absSize.Y, 0, 1)
@@ -1318,8 +1116,7 @@ function ColorPicker.new(parent, config)
         end
     end))
 
-    -- Global mouse move / release
-    table.insert(self._connections, UserInputService.InputChanged:Connect(function(input, processed)
+    table.insert(self._connections, UserInputService.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             if self._draggingSV then
                 updateSVFromInput(input)
@@ -1336,7 +1133,6 @@ function ColorPicker.new(parent, config)
         end
     end))
 
-    -- ===== RGB Box Input =====
     for i, box in ipairs(rgbBoxes) do
         table.insert(self._connections, box.FocusLost:Connect(function(enterPressed)
             local val = tonumber(box.Text)
@@ -1359,7 +1155,6 @@ function ColorPicker.new(parent, config)
         end))
     end
 
-    -- ===== Hex Box Input =====
     table.insert(self._connections, hexBox.FocusLost:Connect(function(enterPressed)
         local color = hexToColor3(hexBox.Text)
         if color then
@@ -1374,13 +1169,11 @@ function ColorPicker.new(parent, config)
         end
     end))
 
-    -- ===== Apply Button =====
     table.insert(self._connections, applyBtn.MouseButton1Click:Connect(function()
         fireCallback()
         self:_closePanel()
     end))
 
-    -- ===== Toggle Panel =====
     table.insert(self._connections, previewBtn.MouseButton1Click:Connect(function()
         if self._panelOpen then
             self:_closePanel()
@@ -1389,24 +1182,20 @@ function ColorPicker.new(parent, config)
         end
     end))
 
-    -- ===== Click outside to close =====
     table.insert(self._connections, UserInputService.InputBegan:Connect(function(input)
         if not self._panelOpen then return end
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
             return
         end
-        -- Check if click is inside the panel
         local pos = input.Position
         local panelAbsPos = panel.AbsolutePosition
         local panelAbsSize = panel.AbsoluteSize
         local previewAbsPos = preview.AbsolutePosition
         local previewAbsSize = preview.AbsoluteSize
-
         local insidePanel = pos.X >= panelAbsPos.X and pos.X <= panelAbsPos.X + panelAbsSize.X
             and pos.Y >= panelAbsPos.Y and pos.Y <= panelAbsPos.Y + panelAbsSize.Y
         local insidePreview = pos.X >= previewAbsPos.X and pos.X <= previewAbsPos.X + previewAbsSize.X
             and pos.Y >= previewAbsPos.Y and pos.Y <= previewAbsPos.Y + previewAbsSize.Y
-
         if not insidePanel and not insidePreview then
             task.defer(function()
                 self:_closePanel()
@@ -1414,7 +1203,6 @@ function ColorPicker.new(parent, config)
         end
     end))
 
-    -- Apply hover effect to apply button
     table.insert(self._connections, applyBtn.MouseEnter:Connect(function()
         TweenService:Create(applyBtn, TweenInfo.new(Theme.Animation.Fast, Theme.Animation.EaseStyle, Theme.Animation.EaseOut), {
             BackgroundColor3 = Theme.Colors.AccentHover,
@@ -1454,25 +1242,15 @@ function ColorPicker:SetColor(color)
     self._val = v
     self._currentColor = color
     self._preview.BackgroundColor3 = color
-
-    -- Update all displays (only if panel elements exist)
-    if self._svCanvas then
-        self._svCanvas.BackgroundColor3 = hsvToColor3(h, 1, 1)
-    end
-    if self._svIndicator then
-        self._svIndicator.Position = UDim2.new(s, 0, 1 - v, 0)
-    end
-    if self._hueIndicator then
-        self._hueIndicator.Position = UDim2.new(0.5, 0, h, 0)
-    end
+    if self._svCanvas then self._svCanvas.BackgroundColor3 = hsvToColor3(h, 1, 1) end
+    if self._svIndicator then self._svIndicator.Position = UDim2.new(s, 0, 1 - v, 0) end
+    if self._hueIndicator then self._hueIndicator.Position = UDim2.new(0.5, 0, h, 0) end
     if self._rgbBoxes then
         self._rgbBoxes[1].Text = tostring(math.round(color.R * 255))
         self._rgbBoxes[2].Text = tostring(math.round(color.G * 255))
         self._rgbBoxes[3].Text = tostring(math.round(color.B * 255))
     end
-    if self._hexBox then
-        self._hexBox.Text = color3ToHex(color):sub(2)
-    end
+    if self._hexBox then self._hexBox.Text = color3ToHex(color):sub(2) end
 end
 
 function ColorPicker:SetValue(color)
@@ -1480,11 +1258,8 @@ function ColorPicker:SetValue(color)
 end
 
 function ColorPicker:Destroy()
-    for _, conn in self._connections do
-        conn:Disconnect()
-    end
+    for _, conn in self._connections do conn:Disconnect() end
     self._connections = {}
-
     if self.Frame then
         self.Frame:Destroy()
         self.Frame = nil
@@ -1492,28 +1267,19 @@ function ColorPicker:Destroy()
 end
 
 return ColorPicker
-
 end)()
 
 -- [Components_Divider]
 _M["Components_Divider"] = (function()
---[[
-    Divider.lua
-    A simple thin horizontal divider line with optional vertical margin.
-    Part of CSGOLib UI Library.
-]]
-
 local Theme = _M["Theme"]
 
 local Divider = {}
 Divider.__index = Divider
 
-function Divider.new(parent, config: { Margin? }?)
+function Divider.new(parent, config)
     local self = setmetatable({}, Divider)
-
     local margin = (config and config.Margin ~= nil) and config.Margin or Theme.Spacing.Small
 
-    -- Wrapper frame that provides vertical margin via padding
     local wrapper = Theme.Create("Frame", {
         Name = "Divider",
         Size = UDim2.new(1, 0, 0, Theme.Sizes.BorderThickness + (margin * 2)),
@@ -1522,8 +1288,7 @@ function Divider.new(parent, config: { Margin? }?)
     })
     self.Frame = wrapper
 
-    -- Top margin spacer
-    local topSpacer = Theme.Create("Frame", {
+    Theme.Create("Frame", {
         Name = "TopMargin",
         Size = UDim2.new(1, 0, 0, margin),
         Position = UDim2.new(0, 0, 0, 0),
@@ -1531,8 +1296,7 @@ function Divider.new(parent, config: { Margin? }?)
         Parent = wrapper,
     })
 
-    -- Actual divider line
-    local line = Theme.Create("Frame", {
+    Theme.Create("Frame", {
         Name = "Line",
         Size = UDim2.new(1, 0, 0, Theme.Sizes.BorderThickness),
         Position = UDim2.new(0, 0, 0, margin),
@@ -1552,25 +1316,10 @@ function Divider:Destroy()
 end
 
 return Divider
-
 end)()
 
 -- [Components_Dropdown]
 _M["Components_Dropdown"] = (function()
---[[
-    Dropdown.lua
-    CS:GO-style compact dropdown selector with animated expand/collapse.
-    Part of CSGOLib UI Library.
-
-    Usage:
-        local dropdown = Dropdown.new(parent, {
-            Name = "Weapon",
-            Options = {"AK-47", "M4A4", "AWP", "Desert Eagle"},
-            Default = "AK-47",
-            Callback = function(selected) end,
-        })
-]]
-
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Theme = _M["Theme"]
@@ -1582,12 +1331,7 @@ local OPTION_HEIGHT = 20
 local ARROW_CHAR = "▼"
 local ARROW_UP_CHAR = "▲"
 
-function Dropdown.new(parent, config: {
-    Name,
-    Options: {string},
-    Default?,
-    Callback: ((string) -> ())?
-})
+function Dropdown.new(parent, config)
     local self = setmetatable({}, Dropdown)
 
     self._options = config.Options or {}
@@ -1597,7 +1341,6 @@ function Dropdown.new(parent, config: {
     self._open = false
     self._optionButtons = {}
 
-    -- Root frame
     self.Frame = Theme.Create("Frame", {
         Name = "Dropdown_" .. config.Name,
         Size = UDim2.new(1, 0, 0, Theme.Sizes.DropdownHeight),
@@ -1606,7 +1349,6 @@ function Dropdown.new(parent, config: {
         Parent = parent,
     })
 
-    -- Label (left side)
     Theme.Create("TextLabel", {
         Name = "Label",
         Size = UDim2.new(0.45, 0, 0, Theme.Sizes.DropdownHeight),
@@ -1621,11 +1363,9 @@ function Dropdown.new(parent, config: {
         Parent = self.Frame,
     })
 
-    -- Selected value box (right side)
-    local selectorWidth = UDim2.new(0.55, 0, 0, Theme.Sizes.DropdownHeight)
     local selectorBox = Theme.Create("TextButton", {
         Name = "Selector",
-        Size = selectorWidth,
+        Size = UDim2.new(0.55, 0, 0, Theme.Sizes.DropdownHeight),
         Position = UDim2.new(0.45, 0, 0, 0),
         BackgroundColor3 = Theme.Colors.Surface,
         BorderSizePixel = 0,
@@ -1637,7 +1377,6 @@ function Dropdown.new(parent, config: {
     Theme.ApplyBorder(selectorBox, Theme.Colors.Border)
     self._selectorBox = selectorBox
 
-    -- Selected text inside selector
     local selectedLabel = Theme.Create("TextLabel", {
         Name = "SelectedText",
         Size = UDim2.new(1, -(Theme.Spacing.Medium + 12), 1, 0),
@@ -1654,7 +1393,6 @@ function Dropdown.new(parent, config: {
     })
     self._selectedLabel = selectedLabel
 
-    -- Arrow indicator
     local arrow = Theme.Create("TextLabel", {
         Name = "Arrow",
         Size = UDim2.new(0, 12, 1, 0),
@@ -1670,13 +1408,12 @@ function Dropdown.new(parent, config: {
     })
     self._arrow = arrow
 
-    -- Dropdown list container (absolute positioned below selector)
     local maxVisibleOptions = math.min(#self._options, 8)
     local listHeight = maxVisibleOptions * OPTION_HEIGHT + 2
 
     local dropdownContainer = Theme.Create("Frame", {
         Name = "DropdownList",
-        Size = UDim2.new(1, 0, 0, 0), -- starts collapsed
+        Size = UDim2.new(1, 0, 0, 0),
         Position = UDim2.new(0, 0, 0, Theme.Sizes.DropdownHeight + 1),
         BackgroundColor3 = Theme.Colors.Surface,
         BorderSizePixel = 0,
@@ -1690,7 +1427,6 @@ function Dropdown.new(parent, config: {
     self._dropdownContainer = dropdownContainer
     self._listHeight = listHeight
 
-    -- Scrolling frame inside dropdown for options
     local scrollFrame = Theme.Create("ScrollingFrame", {
         Name = "ScrollFrame",
         Size = UDim2.new(1, 0, 1, 0),
@@ -1705,7 +1441,6 @@ function Dropdown.new(parent, config: {
     })
     self._scrollFrame = scrollFrame
 
-    -- Populate options
     for i, option in ipairs(self._options) do
         local optionButton = Theme.Create("TextButton", {
             Name = "Option_" .. option,
@@ -1736,16 +1471,12 @@ function Dropdown.new(parent, config: {
             Parent = optionButton,
         })
 
-        -- Hover effects
         table.insert(self._connections, optionButton.MouseEnter:Connect(function()
             optionButton.BackgroundColor3 = Theme.Colors.SurfaceHover
         end))
-
         table.insert(self._connections, optionButton.MouseLeave:Connect(function()
             optionButton.BackgroundColor3 = Theme.Colors.Surface
         end))
-
-        -- Click to select
         table.insert(self._connections, optionButton.MouseButton1Click:Connect(function()
             self:SetValue(option)
             self:_close()
@@ -1754,14 +1485,8 @@ function Dropdown.new(parent, config: {
         table.insert(self._optionButtons, { button = optionButton, label = optionLabel, value = option })
     end
 
-    -- Tween info
-    self._tweenInfo = TweenInfo.new(
-        Theme.Animation.Normal,
-        Theme.Animation.EaseStyle,
-        Theme.Animation.EaseOut
-    )
+    self._tweenInfo = TweenInfo.new(Theme.Animation.Normal, Theme.Animation.EaseStyle, Theme.Animation.EaseOut)
 
-    -- Toggle dropdown on selector click
     table.insert(self._connections, selectorBox.MouseButton1Click:Connect(function()
         if self._open then
             self:_close()
@@ -1770,50 +1495,31 @@ function Dropdown.new(parent, config: {
         end
     end))
 
-    -- Click outside to close
     table.insert(self._connections, UserInputService.InputBegan:Connect(function(input)
         if not self._open then return end
         if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-
-        -- Delay a frame to allow click handlers to fire first
         task.defer(function()
             if not self._open then return end
-
             local mousePos = UserInputService:GetMouseLocation()
             local selectorAbsPos = selectorBox.AbsolutePosition
             local selectorAbsSize = selectorBox.AbsoluteSize
-
-            -- Check if click is within selector or dropdown area
             local dropdownAbsPos = dropdownContainer.AbsolutePosition
             local dropdownAbsSize = dropdownContainer.AbsoluteSize
-
-            local inSelector = mousePos.X >= selectorAbsPos.X
-                and mousePos.X <= selectorAbsPos.X + selectorAbsSize.X
-                and mousePos.Y >= selectorAbsPos.Y
-                and mousePos.Y <= selectorAbsPos.Y + selectorAbsSize.Y
-
-            local inDropdown = mousePos.X >= dropdownAbsPos.X
-                and mousePos.X <= dropdownAbsPos.X + dropdownAbsSize.X
-                and mousePos.Y >= dropdownAbsPos.Y
-                and mousePos.Y <= dropdownAbsPos.Y + dropdownAbsSize.Y
-
+            local inSelector = mousePos.X >= selectorAbsPos.X and mousePos.X <= selectorAbsPos.X + selectorAbsSize.X
+                and mousePos.Y >= selectorAbsPos.Y and mousePos.Y <= selectorAbsPos.Y + selectorAbsSize.Y
+            local inDropdown = mousePos.X >= dropdownAbsPos.X and mousePos.X <= dropdownAbsPos.X + dropdownAbsSize.X
+                and mousePos.Y >= dropdownAbsPos.Y and mousePos.Y <= dropdownAbsPos.Y + dropdownAbsSize.Y
             if not inSelector and not inDropdown then
                 self:_close()
             end
         end)
     end))
 
-    -- Hover on selector
     table.insert(self._connections, selectorBox.MouseEnter:Connect(function()
-        if not self._open then
-            selectorBox.BackgroundColor3 = Theme.Colors.SurfaceHover
-        end
+        if not self._open then selectorBox.BackgroundColor3 = Theme.Colors.SurfaceHover end
     end))
-
     table.insert(self._connections, selectorBox.MouseLeave:Connect(function()
-        if not self._open then
-            selectorBox.BackgroundColor3 = Theme.Colors.Surface
-        end
+        if not self._open then selectorBox.BackgroundColor3 = Theme.Colors.Surface end
     end))
 
     return self
@@ -1822,40 +1528,23 @@ end
 function Dropdown:_openDropdown()
     if self._open then return end
     self._open = true
-
     self._dropdownContainer.Visible = true
     self._dropdownContainer.Size = UDim2.new(1, 0, 0, 0)
     self._arrow.Text = ARROW_UP_CHAR
-
-    -- Highlight current selection
     self:_updateOptionHighlights()
-
-    -- Animate expand
-    local tween = TweenService:Create(self._dropdownContainer, self._tweenInfo, {
-        Size = UDim2.new(1, 0, 0, self._listHeight),
-    })
-    tween:Play()
-
+    TweenService:Create(self._dropdownContainer, self._tweenInfo, {Size = UDim2.new(1, 0, 0, self._listHeight)}):Play()
     self._selectorBox.BackgroundColor3 = Theme.Colors.SurfaceActive
 end
 
 function Dropdown:_close()
     if not self._open then return end
     self._open = false
-
     self._arrow.Text = ARROW_CHAR
-
-    -- Animate collapse
-    local tween = TweenService:Create(self._dropdownContainer, self._tweenInfo, {
-        Size = UDim2.new(1, 0, 0, 0),
-    })
+    local tween = TweenService:Create(self._dropdownContainer, self._tweenInfo, {Size = UDim2.new(1, 0, 0, 0)})
     tween:Play()
     tween.Completed:Connect(function()
-        if not self._open then
-            self._dropdownContainer.Visible = false
-        end
+        if not self._open then self._dropdownContainer.Visible = false end
     end)
-
     self._selectorBox.BackgroundColor3 = Theme.Colors.Surface
 end
 
@@ -1870,23 +1559,15 @@ function Dropdown:_updateOptionHighlights()
 end
 
 function Dropdown:SetValue(value)
-    -- Validate option exists
     local found = false
     for _, opt in ipairs(self._options) do
-        if opt == value then
-            found = true
-            break
-        end
+        if opt == value then found = true break end
     end
     if not found then return end
-
     self._value = value
     self._selectedLabel.Text = value
     self:_updateOptionHighlights()
-
-    if self._callback then
-        self._callback(self._value)
-    end
+    if self._callback then self._callback(self._value) end
 end
 
 function Dropdown:GetValue()
@@ -1895,9 +1576,7 @@ end
 
 function Dropdown:Destroy()
     self:_close()
-    for _, connection in ipairs(self._connections) do
-        connection:Disconnect()
-    end
+    for _, connection in ipairs(self._connections) do connection:Disconnect() end
     self._connections = {}
     self._optionButtons = {}
     if self.Frame then
@@ -1907,24 +1586,10 @@ function Dropdown:Destroy()
 end
 
 return Dropdown
-
 end)()
 
 -- [Components_Keybind]
 _M["Components_Keybind"] = (function()
---[[
-    Keybind.lua
-    CS:GO-style keybind selector component.
-    Part of CSGOLib UI Library.
-
-    Usage:
-        local keybind = Keybind.new(parent, {
-            Name = "Toggle Menu",
-            Default = Enum.KeyCode.F5,
-            Callback = function(keyCode) end,
-        })
-]]
-
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Theme = _M["Theme"]
@@ -1932,51 +1597,45 @@ local Theme = _M["Theme"]
 local Keybind = {}
 Keybind.__index = Keybind
 
--- Map of KeyCode enum values to short display names
 local KEY_DISPLAY_NAMES = {
-    [Enum.KeyCode.LeftShift] = "LShift",
-    [Enum.KeyCode.RightShift] = "RShift",
-    [Enum.KeyCode.LeftControl] = "LCtrl",
+    [Enum.KeyCode.LeftShift]    = "LShift",
+    [Enum.KeyCode.RightShift]   = "RShift",
+    [Enum.KeyCode.LeftControl]  = "LCtrl",
     [Enum.KeyCode.RightControl] = "RCtrl",
-    [Enum.KeyCode.LeftAlt] = "LAlt",
-    [Enum.KeyCode.RightAlt] = "RAlt",
-    [Enum.KeyCode.CapsLock] = "Caps",
-    [Enum.KeyCode.Backspace] = "Bksp",
-    [Enum.KeyCode.Return] = "Enter",
-    [Enum.KeyCode.Space] = "Space",
-    [Enum.KeyCode.Tab] = "Tab",
-    [Enum.KeyCode.Delete] = "Del",
-    [Enum.KeyCode.Insert] = "Ins",
-    [Enum.KeyCode.Home] = "Home",
-    [Enum.KeyCode.End] = "End",
-    [Enum.KeyCode.PageUp] = "PgUp",
-    [Enum.KeyCode.PageDown] = "PgDn",
-    [Enum.KeyCode.Up] = "Up",
-    [Enum.KeyCode.Down] = "Down",
-    [Enum.KeyCode.Left] = "Left",
-    [Enum.KeyCode.Right] = "Right",
-    [Enum.KeyCode.Escape] = "Esc",
-    [Enum.KeyCode.Tilde] = "~",
-    [Enum.KeyCode.Minus] = "-",
-    [Enum.KeyCode.Equals] = "=",
-    [Enum.KeyCode.LeftBracket] = "[",
+    [Enum.KeyCode.LeftAlt]      = "LAlt",
+    [Enum.KeyCode.RightAlt]     = "RAlt",
+    [Enum.KeyCode.CapsLock]     = "Caps",
+    [Enum.KeyCode.Backspace]    = "Bksp",
+    [Enum.KeyCode.Return]       = "Enter",
+    [Enum.KeyCode.Space]        = "Space",
+    [Enum.KeyCode.Tab]          = "Tab",
+    [Enum.KeyCode.Delete]       = "Del",
+    [Enum.KeyCode.Insert]       = "Ins",
+    [Enum.KeyCode.Home]         = "Home",
+    [Enum.KeyCode.End]          = "End",
+    [Enum.KeyCode.PageUp]       = "PgUp",
+    [Enum.KeyCode.PageDown]     = "PgDn",
+    [Enum.KeyCode.Up]           = "Up",
+    [Enum.KeyCode.Down]         = "Down",
+    [Enum.KeyCode.Left]         = "Left",
+    [Enum.KeyCode.Right]        = "Right",
+    [Enum.KeyCode.Escape]       = "Esc",
+    [Enum.KeyCode.Tilde]        = "~",
+    [Enum.KeyCode.Minus]        = "-",
+    [Enum.KeyCode.Equals]       = "=",
+    [Enum.KeyCode.LeftBracket]  = "[",
     [Enum.KeyCode.RightBracket] = "]",
-    [Enum.KeyCode.Semicolon] = ";",
-    [Enum.KeyCode.Quote] = "'",
-    [Enum.KeyCode.Comma] = ",",
-    [Enum.KeyCode.Period] = ".",
-    [Enum.KeyCode.Slash] = "/",
+    [Enum.KeyCode.Semicolon]    = ";",
+    [Enum.KeyCode.Quote]        = "'",
+    [Enum.KeyCode.Comma]        = ",",
+    [Enum.KeyCode.Period]       = ".",
+    [Enum.KeyCode.Slash]        = "/",
 }
 
-local function getKeyDisplayName(keyCode: Enum.KeyCode?)
-    if keyCode == nil then
-        return "None"
-    end
-    if KEY_DISPLAY_NAMES[keyCode] then
-        return KEY_DISPLAY_NAMES[keyCode]
-    end
+local function getKeyDisplayName(keyCode)
+    if keyCode == nil then return "None" end
+    if KEY_DISPLAY_NAMES[keyCode] then return KEY_DISPLAY_NAMES[keyCode] end
     local name = keyCode.Name
-    -- Clean up common prefixes
     if string.sub(name, 1, 7) == "Keypad" then
         return "Num" .. string.sub(name, 8)
     end
@@ -1986,12 +1645,11 @@ end
 function Keybind.new(parent, config)
     local self = setmetatable({}, Keybind)
 
-    self._value = config.Default -- nil means "None"
+    self._value = config.Default
     self._callback = config.Callback
     self._connections = {}
     self._capturing = false
 
-    -- Root frame
     self.Frame = Theme.Create("Frame", {
         Name = "Keybind_" .. config.Name,
         Size = UDim2.new(1, 0, 0, Theme.Sizes.ControlHeight),
@@ -1999,7 +1657,6 @@ function Keybind.new(parent, config)
         Parent = parent,
     })
 
-    -- Label (left)
     Theme.Create("TextLabel", {
         Name = "Label",
         Size = UDim2.new(1, -(Theme.Sizes.KeybindWidth + Theme.Spacing.Medium), 0, Theme.Sizes.ControlHeight),
@@ -2014,7 +1671,6 @@ function Keybind.new(parent, config)
         Parent = self.Frame,
     })
 
-    -- Keybind display box (right)
     local boxYOffset = math.floor((Theme.Sizes.ControlHeight - Theme.Sizes.KeybindHeight) / 2)
     local keybindBox = Theme.Create("TextButton", {
         Name = "KeybindBox",
@@ -2034,60 +1690,37 @@ function Keybind.new(parent, config)
     self._keybindBox = keybindBox
     self._borderStroke = borderStroke
 
-    -- Tween info
-    self._tweenInfo = TweenInfo.new(
-        Theme.Animation.Fast,
-        Theme.Animation.EaseStyle,
-        Theme.Animation.EaseOut
-    )
+    self._tweenInfo = TweenInfo.new(Theme.Animation.Fast, Theme.Animation.EaseStyle, Theme.Animation.EaseOut)
 
-    -- Left-click to enter capture mode
     table.insert(self._connections, keybindBox.MouseButton1Click:Connect(function()
         if self._capturing then return end
         self:_startCapture()
     end))
 
-    -- Right-click to clear keybind
     table.insert(self._connections, keybindBox.MouseButton2Click:Connect(function()
-        if self._capturing then
-            self:_stopCapture()
-        end
+        if self._capturing then self:_stopCapture() end
         self:SetValue(nil)
     end))
 
-    -- Key capture handler
     table.insert(self._connections, UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if not self._capturing then return end
-
         if input.UserInputType == Enum.UserInputType.Keyboard then
             local keyCode = input.KeyCode
-            -- Ignore the Escape key — it cancels capture
             if keyCode == Enum.KeyCode.Escape then
                 self:_stopCapture()
                 return
             end
-            -- Ignore Unknown
             if keyCode == Enum.KeyCode.Unknown then return end
-
             self:_stopCapture()
             self:SetValue(keyCode)
-        elseif input.UserInputType == Enum.UserInputType.MouseButton1
-            or input.UserInputType == Enum.UserInputType.MouseButton2 then
-            -- Ignore mouse clicks during capture (they're handled elsewhere)
         end
     end))
 
-    -- Hover effects
     table.insert(self._connections, keybindBox.MouseEnter:Connect(function()
-        if not self._capturing then
-            keybindBox.BackgroundColor3 = Theme.Colors.SurfaceHover
-        end
+        if not self._capturing then keybindBox.BackgroundColor3 = Theme.Colors.SurfaceHover end
     end))
-
     table.insert(self._connections, keybindBox.MouseLeave:Connect(function()
-        if not self._capturing then
-            keybindBox.BackgroundColor3 = Theme.Colors.Surface
-        end
+        if not self._capturing then keybindBox.BackgroundColor3 = Theme.Colors.Surface end
     end))
 
     return self
@@ -2098,12 +1731,8 @@ function Keybind:_startCapture()
     self._keybindBox.Text = "..."
     self._keybindBox.TextColor3 = Theme.Colors.Accent
     self._keybindBox.BackgroundColor3 = Theme.Colors.SurfaceActive
-
-    -- Accent border during capture
     if self._borderStroke then
-        TweenService:Create(self._borderStroke, self._tweenInfo, {
-            Color = Theme.Colors.Accent,
-        }):Play()
+        TweenService:Create(self._borderStroke, self._tweenInfo, {Color = Theme.Colors.Accent}):Play()
     end
 end
 
@@ -2112,34 +1741,26 @@ function Keybind:_stopCapture()
     self._keybindBox.Text = getKeyDisplayName(self._value)
     self._keybindBox.TextColor3 = Theme.Colors.TextDim
     self._keybindBox.BackgroundColor3 = Theme.Colors.Surface
-
-    -- Restore normal border
     if self._borderStroke then
-        TweenService:Create(self._borderStroke, self._tweenInfo, {
-            Color = Theme.Colors.Border,
-        }):Play()
+        TweenService:Create(self._borderStroke, self._tweenInfo, {Color = Theme.Colors.Border}):Play()
     end
 end
 
-function Keybind:SetValue(keyCode: Enum.KeyCode?)
+function Keybind:SetValue(keyCode)
     self._value = keyCode
     if not self._capturing then
         self._keybindBox.Text = getKeyDisplayName(self._value)
     end
-    if self._callback then
-        self._callback(self._value)
-    end
+    if self._callback then self._callback(self._value) end
 end
 
-function Keybind:GetValue(): Enum.KeyCode?
+function Keybind:GetValue()
     return self._value
 end
 
 function Keybind:Destroy()
     self._capturing = false
-    for _, connection in ipairs(self._connections) do
-        connection:Disconnect()
-    end
+    for _, connection in ipairs(self._connections) do connection:Disconnect() end
     self._connections = {}
     if self.Frame then
         self.Frame:Destroy()
@@ -2148,17 +1769,10 @@ function Keybind:Destroy()
 end
 
 return Keybind
-
 end)()
 
 -- [Components_Notification]
 _M["Components_Notification"] = (function()
---[[
-    Notification.lua
-    Toast notification system with slide-in animation and auto-dismiss.
-    Part of CSGOLib UI Library.
-]]
-
 local TweenService = game:GetService("TweenService")
 local Theme = _M["Theme"]
 
@@ -2172,25 +1786,21 @@ local TYPE_CONFIG = {
     Info    = { Color = nil, Icon = "ℹ" },
 }
 
--- Deferred color init (Theme must be loaded)
 local function getTypeConfig(typeName)
-    -- Lazily initialize colors from Theme
     if TYPE_CONFIG.Success.Color == nil then
         TYPE_CONFIG.Success.Color = Theme.Colors.Success
-        TYPE_CONFIG.Error.Color = Theme.Colors.Error
+        TYPE_CONFIG.Error.Color   = Theme.Colors.Error
         TYPE_CONFIG.Warning.Color = Theme.Colors.Warning
-        TYPE_CONFIG.Info.Color = Theme.Colors.Accent
+        TYPE_CONFIG.Info.Color    = Theme.Colors.Accent
     end
     return TYPE_CONFIG[typeName] or TYPE_CONFIG.Info
 end
 
-function NotificationManager.new(screenGui: ScreenGui)
+function NotificationManager.new(screenGui)
     local self = setmetatable({}, NotificationManager)
-
     self._notifications = {}
     self._connections = {}
 
-    -- Container anchored top-right
     local container = Theme.Create("Frame", {
         Name = "NotificationContainer",
         Size = UDim2.new(0, Theme.Sizes.NotifWidth + Theme.Spacing.Large, 1, 0),
@@ -2200,13 +1810,13 @@ function NotificationManager.new(screenGui: ScreenGui)
         Parent = screenGui,
     })
 
-    local padding = Theme.Create("UIPadding", {
+    Theme.Create("UIPadding", {
         PaddingTop = UDim.new(0, Theme.Spacing.Medium),
         PaddingRight = UDim.new(0, Theme.Spacing.Medium),
         Parent = container,
     })
 
-    local layout = Theme.Create("UIListLayout", {
+    Theme.Create("UIListLayout", {
         Padding = UDim.new(0, Theme.Spacing.Small),
         FillDirection = Enum.FillDirection.Vertical,
         HorizontalAlignment = Enum.HorizontalAlignment.Right,
@@ -2216,7 +1826,6 @@ function NotificationManager.new(screenGui: ScreenGui)
 
     self._container = container
     self._layoutOrder = 0
-
     return self
 end
 
@@ -2231,7 +1840,6 @@ function NotificationManager:Notify(config)
     local notifWidth = Theme.Sizes.NotifWidth
     local notifHeight = Theme.Sizes.NotifHeight
 
-    -- Notification frame (starts off-screen to the right)
     local notif = Theme.Create("Frame", {
         Name = "Notification",
         Size = UDim2.new(0, notifWidth, 0, notifHeight),
@@ -2243,12 +1851,9 @@ function NotificationManager:Notify(config)
     })
     Theme.ApplyBorder(notif, Theme.Colors.Border)
     Theme.ApplyCorner(notif, Theme.Corner.Tiny)
-
-    -- Start off-screen
     notif.Position = UDim2.new(0, notifWidth + 20, 0, 0)
 
-    -- Left accent bar
-    local accentBar = Theme.Create("Frame", {
+    Theme.Create("Frame", {
         Name = "AccentBar",
         Size = UDim2.new(0, 2, 1, 0),
         Position = UDim2.new(0, 0, 0, 0),
@@ -2258,8 +1863,7 @@ function NotificationManager:Notify(config)
         Parent = notif,
     })
 
-    -- Icon label
-    local icon = Theme.Create("TextLabel", {
+    Theme.Create("TextLabel", {
         Name = "Icon",
         Size = UDim2.new(0, 20, 1, 0),
         Position = UDim2.new(0, 6, 0, 0),
@@ -2273,8 +1877,7 @@ function NotificationManager:Notify(config)
         Parent = notif,
     })
 
-    -- Message label
-    local message = Theme.Create("TextLabel", {
+    Theme.Create("TextLabel", {
         Name = "Message",
         Size = UDim2.new(1, -30, 1, 0),
         Position = UDim2.new(0, 28, 0, 0),
@@ -2289,30 +1892,24 @@ function NotificationManager:Notify(config)
         Parent = notif,
     })
 
-    -- Slide in animation
     local slideIn = TweenService:Create(notif, TweenInfo.new(Theme.Animation.Normal, Theme.Animation.EaseStyle, Theme.Animation.EaseOut), {
         Position = UDim2.new(0, 0, 0, 0),
     })
     slideIn:Play()
 
-    -- Track this notification
     local entry = { Frame = notif, CleanupFn = nil }
     table.insert(self._notifications, entry)
 
-    -- Dismiss function
     local dismissed = false
     local function dismiss()
         if dismissed then return end
         dismissed = true
-
-        -- Fade out and slide right
         local fadeOut = TweenService:Create(notif, TweenInfo.new(Theme.Animation.Normal, Theme.Animation.EaseStyle, Theme.Animation.EaseOut), {
             Position = UDim2.new(0, notifWidth + 20, 0, 0),
             BackgroundTransparency = 0.5,
         })
         fadeOut:Play()
         fadeOut.Completed:Connect(function()
-            -- Remove from list
             for i, n in self._notifications do
                 if n.Frame == notif then
                     table.remove(self._notifications, i)
@@ -2324,31 +1921,20 @@ function NotificationManager:Notify(config)
     end
 
     entry.CleanupFn = dismiss
-
-    -- Auto-dismiss timer
-    task.delay(duration, function()
-        dismiss()
-    end)
+    task.delay(duration, function() dismiss() end)
 end
 
 function NotificationManager:ClearAll()
-    -- Copy list since dismiss modifies it
     local toRemove = table.clone(self._notifications)
     for _, entry in toRemove do
-        if entry.CleanupFn then
-            entry.CleanupFn()
-        end
+        if entry.CleanupFn then entry.CleanupFn() end
     end
 end
 
 function NotificationManager:Destroy()
     self:ClearAll()
-
-    for _, conn in self._connections do
-        conn:Disconnect()
-    end
+    for _, conn in self._connections do conn:Disconnect() end
     self._connections = {}
-
     if self._container then
         self._container:Destroy()
         self._container = nil
@@ -2356,31 +1942,23 @@ function NotificationManager:Destroy()
 end
 
 return NotificationManager
-
 end)()
 
 -- [Components_SearchInput]
 _M["Components_SearchInput"] = (function()
---[[
-    SearchInput.lua
-    Search/filter text input with icon and clear button.
-    Part of CSGOLib UI Library.
-]]
-
 local TweenService = game:GetService("TweenService")
 local Theme = _M["Theme"]
 
 local SearchInput = {}
 SearchInput.__index = SearchInput
 
-function SearchInput.new(parent, config: { Placeholder?, Callback: ((string) -> ())? }?)
+function SearchInput.new(parent, config)
     local self = setmetatable({}, SearchInput)
 
     self._connections = {}
     self._callback = config and config.Callback or nil
     local placeholder = (config and config.Placeholder) or "Search..."
 
-    -- Root container
     local root = Theme.Create("Frame", {
         Name = "SearchInput",
         Size = UDim2.new(1, 0, 0, Theme.Sizes.ControlHeight),
@@ -2394,8 +1972,7 @@ function SearchInput.new(parent, config: { Placeholder?, Callback: ((string) -> 
     self._root = root
     self._borderStroke = root:FindFirstChildWhichIsA("UIStroke")
 
-    -- Search icon
-    local searchIcon = Theme.Create("TextLabel", {
+    Theme.Create("TextLabel", {
         Name = "SearchIcon",
         Size = UDim2.new(0, 22, 1, 0),
         Position = UDim2.new(0, 0, 0, 0),
@@ -2409,7 +1986,6 @@ function SearchInput.new(parent, config: { Placeholder?, Callback: ((string) -> 
         Parent = root,
     })
 
-    -- Clear button (hidden by default)
     local clearBtn = Theme.Create("TextButton", {
         Name = "ClearBtn",
         Size = UDim2.new(0, 20, 1, 0),
@@ -2426,7 +2002,6 @@ function SearchInput.new(parent, config: { Placeholder?, Callback: ((string) -> 
     })
     self._clearBtn = clearBtn
 
-    -- Text input
     local textBox = Theme.Create("TextBox", {
         Name = "Input",
         Size = UDim2.new(1, -44, 1, 0),
@@ -2445,25 +2020,18 @@ function SearchInput.new(parent, config: { Placeholder?, Callback: ((string) -> 
     })
     self._textBox = textBox
 
-    -- Text changed handler
     table.insert(self._connections, textBox:GetPropertyChangedSignal("Text"):Connect(function()
         local text = textBox.Text
         local hasText = #text > 0
         clearBtn.Visible = hasText
-
-        -- Adjust text box width to accommodate clear button
         if hasText then
             textBox.Size = UDim2.new(1, -44, 1, 0)
         else
             textBox.Size = UDim2.new(1, -24, 1, 0)
         end
-
-        if self._callback then
-            self._callback(text)
-        end
+        if self._callback then self._callback(text) end
     end))
 
-    -- Focus styling
     table.insert(self._connections, textBox.Focused:Connect(function()
         if self._borderStroke then
             TweenService:Create(self._borderStroke, TweenInfo.new(Theme.Animation.Fast, Theme.Animation.EaseStyle, Theme.Animation.EaseOut), {
@@ -2480,13 +2048,11 @@ function SearchInput.new(parent, config: { Placeholder?, Callback: ((string) -> 
         end
     end))
 
-    -- Clear button click
     table.insert(self._connections, clearBtn.MouseButton1Click:Connect(function()
         textBox.Text = ""
         textBox:CaptureFocus()
     end))
 
-    -- Clear button hover
     table.insert(self._connections, clearBtn.MouseEnter:Connect(function()
         clearBtn.TextColor3 = Theme.Colors.Text
     end))
@@ -2497,28 +2063,14 @@ function SearchInput.new(parent, config: { Placeholder?, Callback: ((string) -> 
     return self
 end
 
-function SearchInput:GetText()
-    return self._textBox.Text
-end
-
-function SearchInput:SetText(text)
-    self._textBox.Text = text
-end
-
-function SearchInput:Clear()
-    self._textBox.Text = ""
-end
-
-function SearchInput:Focus()
-    self._textBox:CaptureFocus()
-end
+function SearchInput:GetText() return self._textBox.Text end
+function SearchInput:SetText(text) self._textBox.Text = text end
+function SearchInput:Clear() self._textBox.Text = "" end
+function SearchInput:Focus() self._textBox:CaptureFocus() end
 
 function SearchInput:Destroy()
-    for _, conn in self._connections do
-        conn:Disconnect()
-    end
+    for _, conn in self._connections do conn:Disconnect() end
     self._connections = {}
-
     if self.Frame then
         self.Frame:Destroy()
         self.Frame = nil
@@ -2526,28 +2078,10 @@ function SearchInput:Destroy()
 end
 
 return SearchInput
-
 end)()
 
 -- [Components_Slider]
 _M["Components_Slider"] = (function()
---[[
-    Slider.lua
-    CS:GO-style horizontal slider with value display.
-    Part of CSGOLib UI Library.
-
-    Usage:
-        local slider = Slider.new(parent, {
-            Name = "Volume",
-            Min = 0,
-            Max = 100,
-            Default = 50,
-            Step = 1,
-            Suffix = "%",
-            Callback = function(value) end,
-        })
-]]
-
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Theme = _M["Theme"]
@@ -2573,7 +2107,6 @@ function Slider.new(parent, config)
     local trackRowHeight = Theme.Sizes.SliderHandle + Theme.Spacing.Small
     local totalHeight = labelRowHeight + trackRowHeight
 
-    -- Root frame
     self.Frame = Theme.Create("Frame", {
         Name = "Slider_" .. config.Name,
         Size = UDim2.new(1, 0, 0, totalHeight),
@@ -2581,7 +2114,6 @@ function Slider.new(parent, config)
         Parent = parent,
     })
 
-    -- Label (left)
     Theme.Create("TextLabel", {
         Name = "Label",
         Size = UDim2.new(0.6, 0, 0, labelRowHeight),
@@ -2596,7 +2128,6 @@ function Slider.new(parent, config)
         Parent = self.Frame,
     })
 
-    -- Value display (right)
     local valueLabel = Theme.Create("TextLabel", {
         Name = "Value",
         Size = UDim2.new(0.4, 0, 0, labelRowHeight),
@@ -2612,7 +2143,6 @@ function Slider.new(parent, config)
     })
     self._valueLabel = valueLabel
 
-    -- Track container (positioned below label row, with padding for handle overflow)
     local handleOverflow = math.floor(Theme.Sizes.SliderHandle / 2)
     local trackContainer = Theme.Create("Frame", {
         Name = "TrackContainer",
@@ -2622,7 +2152,6 @@ function Slider.new(parent, config)
         Parent = self.Frame,
     })
 
-    -- Track background (the thin bar)
     local trackY = math.floor((trackRowHeight - Theme.Sizes.SliderHeight) / 2)
     local track = Theme.Create("Frame", {
         Name = "Track",
@@ -2635,7 +2164,6 @@ function Slider.new(parent, config)
     Theme.ApplyCorner(track, Theme.Corner.Tiny)
     self._track = track
 
-    -- Track fill (accent colored, from left to handle)
     local fill = Theme.Create("Frame", {
         Name = "Fill",
         Size = UDim2.new(0, 0, 1, 0),
@@ -2647,7 +2175,6 @@ function Slider.new(parent, config)
     Theme.ApplyCorner(fill, Theme.Corner.Tiny)
     self._fill = fill
 
-    -- Handle (small square)
     local handle = Theme.Create("Frame", {
         Name = "Handle",
         Size = UDim2.new(0, Theme.Sizes.SliderHandle, 0, Theme.Sizes.SliderHandle),
@@ -2661,7 +2188,6 @@ function Slider.new(parent, config)
     self._handle = handle
     self._trackContainer = trackContainer
 
-    -- Invisible hit area over track container for click detection
     local hitArea = Theme.Create("TextButton", {
         Name = "HitArea",
         Size = UDim2.new(1, 0, 1, 0),
@@ -2671,23 +2197,19 @@ function Slider.new(parent, config)
         Parent = trackContainer,
     })
 
-    -- Apply initial visual state
     self:_updateVisuals()
 
-    -- Mouse down on hit area starts interaction
     table.insert(self._connections, hitArea.MouseButton1Down:Connect(function()
         self._dragging = true
         self:_updateFromMouse()
     end))
 
-    -- Global mouse move for dragging
     table.insert(self._connections, UserInputService.InputChanged:Connect(function(input)
         if self._dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             self:_updateFromMouse()
         end
     end))
 
-    -- Global mouse up to stop dragging
     table.insert(self._connections, UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             self._dragging = false
@@ -2705,17 +2227,13 @@ function Slider:_snapToStep(value)
 end
 
 function Slider:_formatValue(value)
-    -- Show integer if step is integer, otherwise show decimal
     if self._step >= 1 and self._step == math.floor(self._step) then
         return tostring(math.floor(value + 0.5)) .. self._suffix
     else
-        -- Determine decimal places from step
         local stepStr = tostring(self._step)
         local decPos = string.find(stepStr, "%.")
         local decimals = 1
-        if decPos then
-            decimals = #stepStr - decPos
-        end
+        if decPos then decimals = #stepStr - decPos end
         return string.format("%." .. decimals .. "f", value) .. self._suffix
     end
 end
@@ -2723,15 +2241,9 @@ end
 function Slider:_updateVisuals()
     local range = self._max - self._min
     local alpha = (range > 0) and ((self._value - self._min) / range) or 0
-
     local trackAbsWidth = self._track.AbsoluteSize.X
-    if trackAbsWidth <= 0 then
-        trackAbsWidth = 200 -- fallback
-    end
-
-    local handleHalf = math.floor(Theme.Sizes.SliderHandle / 2)
+    if trackAbsWidth <= 0 then trackAbsWidth = 200 end
     local handleX = math.floor(alpha * (trackAbsWidth - Theme.Sizes.SliderHandle))
-
     self._fill.Size = UDim2.new(alpha, 0, 1, 0)
     self._handle.Position = UDim2.new(0, handleX, self._handle.Position.Y.Scale, self._handle.Position.Y.Offset)
     self._valueLabel.Text = self:_formatValue(self._value)
@@ -2741,22 +2253,16 @@ function Slider:_updateFromMouse()
     local mousePos = UserInputService:GetMouseLocation()
     local trackAbsPos = self._track.AbsolutePosition.X
     local trackAbsWidth = self._track.AbsoluteSize.X
-
     if trackAbsWidth <= 0 then return end
-
     local relativeX = mousePos.X - trackAbsPos
     local alpha = math.clamp(relativeX / trackAbsWidth, 0, 1)
     local rawValue = self._min + alpha * (self._max - self._min)
     local snappedValue = self:_snapToStep(rawValue)
-
     if snappedValue ~= self._value then
         self._value = snappedValue
         self:_updateVisuals()
-        if self._callback then
-            self._callback(self._value)
-        end
+        if self._callback then self._callback(self._value) end
     else
-        -- Still update visuals for smooth handle tracking during drag
         self:_updateVisuals()
     end
 end
@@ -2767,20 +2273,14 @@ function Slider:SetValue(value)
     if snapped == self._value then return end
     self._value = snapped
     self:_updateVisuals()
-    if self._callback then
-        self._callback(self._value)
-    end
+    if self._callback then self._callback(self._value) end
 end
 
-function Slider:GetValue()
-    return self._value
-end
+function Slider:GetValue() return self._value end
 
 function Slider:Destroy()
     self._dragging = false
-    for _, connection in ipairs(self._connections) do
-        connection:Disconnect()
-    end
+    for _, connection in ipairs(self._connections) do connection:Disconnect() end
     self._connections = {}
     if self.Frame then
         self.Frame:Destroy()
@@ -2789,25 +2289,10 @@ function Slider:Destroy()
 end
 
 return Slider
-
 end)()
 
 -- [Components_TextInput]
 _M["Components_TextInput"] = (function()
---[[
-    TextInput.lua
-    CS:GO-style text input field with label and focus state.
-    Part of CSGOLib UI Library.
-
-    Usage:
-        local input = TextInput.new(parent, {
-            Name = "Username",
-            Default = "",
-            Placeholder = "Enter name...",
-            Callback = function(text) end,
-        })
-]]
-
 local TweenService = game:GetService("TweenService")
 local Theme = _M["Theme"]
 
@@ -2823,7 +2308,6 @@ function TextInput.new(parent, config)
     self._connections = {}
     self._focused = false
 
-    -- Root frame
     self.Frame = Theme.Create("Frame", {
         Name = "TextInput_" .. config.Name,
         Size = UDim2.new(1, 0, 0, Theme.Sizes.InputHeight),
@@ -2831,7 +2315,6 @@ function TextInput.new(parent, config)
         Parent = parent,
     })
 
-    -- Label (left side)
     local labelWidthScale = 0.4
     Theme.Create("TextLabel", {
         Name = "Label",
@@ -2847,7 +2330,6 @@ function TextInput.new(parent, config)
         Parent = self.Frame,
     })
 
-    -- Text box container (right side)
     local inputWidthScale = 1 - labelWidthScale
     local inputContainer = Theme.Create("Frame", {
         Name = "InputContainer",
@@ -2863,7 +2345,6 @@ function TextInput.new(parent, config)
     self._inputContainer = inputContainer
     self._borderStroke = borderStroke
 
-    -- Actual TextBox
     local textBox = Theme.Create("TextBox", {
         Name = "TextBox",
         Size = UDim2.new(1, -(Theme.Spacing.Small * 2), 1, 0),
@@ -2883,61 +2364,38 @@ function TextInput.new(parent, config)
     })
     self._textBox = textBox
 
-    -- Tween info
-    self._tweenInfo = TweenInfo.new(
-        Theme.Animation.Fast,
-        Theme.Animation.EaseStyle,
-        Theme.Animation.EaseOut
-    )
+    self._tweenInfo = TweenInfo.new(Theme.Animation.Fast, Theme.Animation.EaseStyle, Theme.Animation.EaseOut)
 
-    -- Focus state: border turns accent
     table.insert(self._connections, textBox.Focused:Connect(function()
         self._focused = true
         if self._borderStroke then
-            TweenService:Create(self._borderStroke, self._tweenInfo, {
-                Color = Theme.Colors.Accent,
-            }):Play()
+            TweenService:Create(self._borderStroke, self._tweenInfo, {Color = Theme.Colors.Accent}):Play()
         end
         inputContainer.BackgroundColor3 = Theme.Colors.Surface
     end))
 
-    -- Unfocus state: border returns to normal
     table.insert(self._connections, textBox.FocusLost:Connect(function(enterPressed)
         self._focused = false
         if self._borderStroke then
-            TweenService:Create(self._borderStroke, self._tweenInfo, {
-                Color = Theme.Colors.Border,
-            }):Play()
+            TweenService:Create(self._borderStroke, self._tweenInfo, {Color = Theme.Colors.Border}):Play()
         end
         inputContainer.BackgroundColor3 = Theme.Colors.Background
-
-        -- Update value and fire callback
         local newText = textBox.Text
         if newText ~= self._value then
             self._value = newText
-            if self._callback then
-                self._callback(self._value)
-            end
+            if self._callback then self._callback(self._value) end
         end
     end))
 
-    -- Live text change tracking
     table.insert(self._connections, textBox:GetPropertyChangedSignal("Text"):Connect(function()
-        -- Update internal value on every text change
         self._value = textBox.Text
     end))
 
-    -- Hover effects on container (when not focused)
     table.insert(self._connections, inputContainer.MouseEnter:Connect(function()
-        if not self._focused then
-            inputContainer.BackgroundColor3 = Theme.Colors.Surface
-        end
+        if not self._focused then inputContainer.BackgroundColor3 = Theme.Colors.Surface end
     end))
-
     table.insert(self._connections, inputContainer.MouseLeave:Connect(function()
-        if not self._focused then
-            inputContainer.BackgroundColor3 = Theme.Colors.Background
-        end
+        if not self._focused then inputContainer.BackgroundColor3 = Theme.Colors.Background end
     end))
 
     return self
@@ -2946,19 +2404,13 @@ end
 function TextInput:SetValue(text)
     self._value = text
     self._textBox.Text = text
-    if self._callback then
-        self._callback(self._value)
-    end
+    if self._callback then self._callback(self._value) end
 end
 
-function TextInput:GetValue()
-    return self._value
-end
+function TextInput:GetValue() return self._value end
 
 function TextInput:Destroy()
-    for _, connection in ipairs(self._connections) do
-        connection:Disconnect()
-    end
+    for _, connection in ipairs(self._connections) do connection:Disconnect() end
     self._connections = {}
     if self.Frame then
         self.Frame:Destroy()
@@ -2967,25 +2419,10 @@ function TextInput:Destroy()
 end
 
 return TextInput
-
 end)()
 
 -- [Components_Toggle]
 _M["Components_Toggle"] = (function()
---[[
-    Toggle.lua
-    CS:GO-style compact rectangular toggle switch component.
-    Part of CSGOLib UI Library.
-
-    Usage:
-        local toggle = Toggle.new(parent, {
-            Name = "Enable Feature",
-            Default = false,
-            Description = "Optional description text",
-            Callback = function(value) end,
-        })
-]]
-
 local TweenService = game:GetService("TweenService")
 local Theme = _M["Theme"]
 
@@ -2999,14 +2436,12 @@ function Toggle.new(parent, config)
     self._callback = config.Callback
     self._connections = {}
 
-    -- Calculate row height
     local hasDescription = config.Description and config.Description ~= ""
     local rowHeight = Theme.Sizes.ControlHeight
     if hasDescription then
         rowHeight = rowHeight + Theme.Font.SizeTiny + Theme.Spacing.Tiny
     end
 
-    -- Root frame - full width row
     self.Frame = Theme.Create("Frame", {
         Name = "Toggle_" .. config.Name,
         Size = UDim2.new(1, 0, 0, rowHeight),
@@ -3014,7 +2449,6 @@ function Toggle.new(parent, config)
         Parent = parent,
     })
 
-    -- Clickable area over entire row
     local hitArea = Theme.Create("TextButton", {
         Name = "HitArea",
         Size = UDim2.new(1, 0, 1, 0),
@@ -3024,7 +2458,6 @@ function Toggle.new(parent, config)
         Parent = self.Frame,
     })
 
-    -- Label
     local label = Theme.Create("TextLabel", {
         Name = "Label",
         Size = UDim2.new(1, -(Theme.Sizes.ToggleWidth + Theme.Spacing.Medium), 0, Theme.Sizes.ControlHeight),
@@ -3039,7 +2472,6 @@ function Toggle.new(parent, config)
         Parent = self.Frame,
     })
 
-    -- Description text (if provided)
     if hasDescription then
         Theme.Create("TextLabel", {
             Name = "Description",
@@ -3056,7 +2488,6 @@ function Toggle.new(parent, config)
         })
     end
 
-    -- Toggle track (outer rectangle)
     local track = Theme.Create("Frame", {
         Name = "Track",
         Size = UDim2.new(0, Theme.Sizes.ToggleWidth, 0, Theme.Sizes.ToggleHeight),
@@ -3068,7 +2499,6 @@ function Toggle.new(parent, config)
     Theme.ApplyCorner(track, Theme.Corner.Tiny)
     Theme.ApplyBorder(track, Theme.Colors.Border)
 
-    -- Sliding indicator (small square inside track)
     local indicatorSize = Theme.Sizes.ToggleHeight - 4
     local indicatorPadding = 2
     local indicatorTravel = Theme.Sizes.ToggleWidth - indicatorSize - (indicatorPadding * 2)
@@ -3088,26 +2518,17 @@ function Toggle.new(parent, config)
     self._indicatorPadding = indicatorPadding
     self._indicatorTravel = indicatorTravel
 
-    -- Tween info
-    self._tweenInfo = TweenInfo.new(
-        Theme.Animation.Fast,
-        Theme.Animation.EaseStyle,
-        Theme.Animation.EaseOut
-    )
+    self._tweenInfo = TweenInfo.new(Theme.Animation.Fast, Theme.Animation.EaseStyle, Theme.Animation.EaseOut)
 
-    -- Apply initial visual state without animation
     self:_applyVisualState(false)
 
-    -- Click handler
     table.insert(self._connections, hitArea.MouseButton1Click:Connect(function()
         self:SetValue(not self._value)
     end))
 
-    -- Hover effects on row
     table.insert(self._connections, hitArea.MouseEnter:Connect(function()
         label.TextColor3 = Theme.Colors.TextBright
     end))
-
     table.insert(self._connections, hitArea.MouseLeave:Connect(function()
         label.TextColor3 = Theme.Colors.Text
     end))
@@ -3115,15 +2536,11 @@ function Toggle.new(parent, config)
     return self
 end
 
-function Toggle:_applyVisualState(animate?)
+function Toggle:_applyVisualState(animate)
     local shouldAnimate = animate ~= false
-
     if self._value then
-        -- ON state: accent background, indicator slides right
         if shouldAnimate then
-            TweenService:Create(self._track, self._tweenInfo, {
-                BackgroundColor3 = Theme.Colors.Accent,
-            }):Play()
+            TweenService:Create(self._track, self._tweenInfo, {BackgroundColor3 = Theme.Colors.Accent}):Play()
             TweenService:Create(self._indicator, self._tweenInfo, {
                 Position = UDim2.new(0, self._indicatorPadding + self._indicatorTravel, 0.5, -math.floor((Theme.Sizes.ToggleHeight - 4) / 2)),
                 BackgroundColor3 = Theme.Colors.TextBright,
@@ -3134,11 +2551,8 @@ function Toggle:_applyVisualState(animate?)
             self._indicator.BackgroundColor3 = Theme.Colors.TextBright
         end
     else
-        -- OFF state: dark background, indicator on left
         if shouldAnimate then
-            TweenService:Create(self._track, self._tweenInfo, {
-                BackgroundColor3 = Theme.Colors.SurfaceLight,
-            }):Play()
+            TweenService:Create(self._track, self._tweenInfo, {BackgroundColor3 = Theme.Colors.SurfaceLight}):Play()
             TweenService:Create(self._indicator, self._tweenInfo, {
                 Position = UDim2.new(0, self._indicatorPadding, 0.5, -math.floor((Theme.Sizes.ToggleHeight - 4) / 2)),
                 BackgroundColor3 = Theme.Colors.TextDim,
@@ -3155,19 +2569,13 @@ function Toggle:SetValue(value)
     if self._value == value then return end
     self._value = value
     self:_applyVisualState(true)
-    if self._callback then
-        self._callback(self._value)
-    end
+    if self._callback then self._callback(self._value) end
 end
 
-function Toggle:GetValue()
-    return self._value
-end
+function Toggle:GetValue() return self._value end
 
 function Toggle:Destroy()
-    for _, connection in ipairs(self._connections) do
-        connection:Disconnect()
-    end
+    for _, connection in ipairs(self._connections) do connection:Disconnect() end
     self._connections = {}
     if self.Frame then
         self.Frame:Destroy()
@@ -3176,89 +2584,55 @@ function Toggle:Destroy()
 end
 
 return Toggle
-
 end)()
 
 -- [ESPPreview]
 _M["ESPPreview"] = (function()
---[[
-    ESPPreview.lua
-    CS:GO-style ESP Preview Panel Component
-    
-    Renders a simulated ESP overlay on a dark game-like viewport,
-    showing bounding boxes, health bars, skeleton lines, name/weapon/distance
-    labels around dummy character silhouettes.
-    
-    Part of CSGOLib UI Library.
-]]
-
 local Theme = _M["Theme"]
 
---------------------------------------------------------------------------------
--- Constants
---------------------------------------------------------------------------------
-
-local VIEWPORT_BG = Color3.fromRGB(12, 14, 12)
+local VIEWPORT_BG    = Color3.fromRGB(12, 14, 12)
 local SILHOUETTE_COLOR = Color3.fromRGB(60, 60, 60)
-local HEALTH_BAR_BG = Color3.fromRGB(8, 8, 8)
-local HEADER_HEIGHT = 18
-
-local DUMMY_NAMES = {
-    "Player_01", "xShadow", "NightFox", "AceKiller",
-    "Ghost_42", "StormX", "Viper99", "IronWolf",
-}
+local HEALTH_BAR_BG  = Color3.fromRGB(8, 8, 8)
+local HEADER_HEIGHT  = 18
 
 local DUMMY_TARGETS = {
     { name = "Player_01",  weapon = "AK-47",  health = 95,  pos = UDim2.new(0.25, 0, 0.35, 0), scale = 1.0 },
-    { name = "xShadow",    weapon = "AWP",    health = 72,  pos = UDim2.new(0.55, 0, 0.28, 0), scale = 0.9 },
-    { name = "NightFox",   weapon = "M4A4",   health = 45,  pos = UDim2.new(0.75, 0, 0.45, 0), scale = 0.75 },
-    { name = "AceKiller",  weapon = "Deagle", health = 100, pos = UDim2.new(0.15, 0, 0.50, 0), scale = 0.7 },
-    { name = "Ghost_42",   weapon = "USP-S",  health = 28,  pos = UDim2.new(0.42, 0, 0.55, 0), scale = 0.65 },
-    { name = "StormX",     weapon = "Glock",  health = 83,  pos = UDim2.new(0.65, 0, 0.60, 0), scale = 0.6 },
-    { name = "Viper99",    weapon = "P250",   health = 55,  pos = UDim2.new(0.35, 0, 0.65, 0), scale = 0.55 },
-    { name = "IronWolf",   weapon = "MP9",    health = 67,  pos = UDim2.new(0.85, 0, 0.40, 0), scale = 0.8 },
+    { name = "xShadow",   weapon = "AWP",    health = 72,  pos = UDim2.new(0.55, 0, 0.28, 0), scale = 0.9 },
+    { name = "NightFox",  weapon = "M4A4",   health = 45,  pos = UDim2.new(0.75, 0, 0.45, 0), scale = 0.75 },
+    { name = "AceKiller", weapon = "Deagle", health = 100, pos = UDim2.new(0.15, 0, 0.50, 0), scale = 0.7 },
+    { name = "Ghost_42",  weapon = "USP-S",  health = 28,  pos = UDim2.new(0.42, 0, 0.55, 0), scale = 0.65 },
+    { name = "StormX",    weapon = "Glock",  health = 83,  pos = UDim2.new(0.65, 0, 0.60, 0), scale = 0.6 },
+    { name = "Viper99",   weapon = "P250",   health = 55,  pos = UDim2.new(0.35, 0, 0.65, 0), scale = 0.55 },
+    { name = "IronWolf",  weapon = "MP9",    health = 67,  pos = UDim2.new(0.85, 0, 0.40, 0), scale = 0.8 },
 }
 
--- Base sizes for a scale=1.0 character (pixels)
-local BASE_HEAD      = 8
-local BASE_BODY_W    = 10
-local BASE_BODY_H    = 18
-local BASE_LEG_W     = 4
-local BASE_LEG_H     = 14
-local LEG_GAP        = 2   -- gap between legs in px at scale 1
-local BOX_PAD        = 3   -- bounding box padding around silhouette
-local ARM_LENGTH     = 10  -- arm reach in px at scale 1
-
---------------------------------------------------------------------------------
--- Helpers
---------------------------------------------------------------------------------
+local BASE_HEAD   = 8
+local BASE_BODY_W = 10
+local BASE_BODY_H = 18
+local BASE_LEG_W  = 4
+local BASE_LEG_H  = 14
+local LEG_GAP     = 2
+local BOX_PAD     = 3
+local ARM_LENGTH  = 10
 
 local function healthColor(pct)
-    if pct >= 60 then
-        return Theme.Colors.Health
-    elseif pct >= 30 then
-        return Theme.Colors.HealthMid
-    else
-        return Theme.Colors.HealthLow
-    end
+    if pct >= 60 then return Theme.Colors.Health
+    elseif pct >= 30 then return Theme.Colors.HealthMid
+    else return Theme.Colors.HealthLow end
 end
 
 local function distanceFromScale(scale)
-    -- Larger scale = closer = smaller distance
     return math.floor(10 + (1.0 - scale) * 80 + 0.5)
 end
 
---- Create a thin line Frame between two pixel offsets relative to a common parent.
---- (x1, y1) and (x2, y2) are pixel coordinates inside the parent.
-local function createLine(parent, x1, y1, x2, y2, color, transparency): Frame
+local function createLine(parent, x1, y1, x2, y2, color, transparency)
     local dx = x2 - x1
     local dy = y2 - y1
     local length = math.sqrt(dx * dx + dy * dy)
     local angle = math.deg(math.atan2(dy, dx))
     local mx = (x1 + x2) / 2
     local my = (y1 + y2) / 2
-
-    local line = Theme.Create("Frame", {
+    return Theme.Create("Frame", {
         Name = "SkeletonLine",
         Parent = parent,
         AnchorPoint = Vector2.new(0.5, 0.5),
@@ -3269,36 +2643,29 @@ local function createLine(parent, x1, y1, x2, y2, color, transparency): Frame
         BackgroundTransparency = transparency,
         BorderSizePixel = 0,
     })
-    return line
 end
-
---------------------------------------------------------------------------------
--- ESPPreview Module
---------------------------------------------------------------------------------
 
 local ESPPreview = {}
 ESPPreview.__index = ESPPreview
 
-function ESPPreview.new(parent, config: {[string]: any}?)
+function ESPPreview.new(parent, config)
     local self = setmetatable({}, ESPPreview)
-
     config = config or {}
 
     self._settings = {
         ShowBoxes    = true,
         ShowNames    = true,
         ShowHealth   = true,
-        ShowDistance  = true,
+        ShowDistance = true,
         ShowSkeleton = false,
         ShowWeapons  = true,
         TargetCount  = 3,
         AccentColor  = Theme.Colors.ESPBox,
     }
 
-    self._targets = {} -- array of target GUI bundles
+    self._targets = {}
     self._connections = {}
 
-    -- Root frame
     self.Frame = Theme.Create("Frame", {
         Name = "ESPPreview",
         Parent = parent,
@@ -3309,7 +2676,6 @@ function ESPPreview.new(parent, config: {[string]: any}?)
     })
     Theme.ApplyBorder(self.Frame)
 
-    -- Header bar
     self._header = Theme.Create("Frame", {
         Name = "Header",
         Parent = self.Frame,
@@ -3333,7 +2699,6 @@ function ESPPreview.new(parent, config: {[string]: any}?)
         TextYAlignment = Enum.TextYAlignment.Center,
     })
 
-    -- Viewport area (below header)
     self._viewport = Theme.Create("Frame", {
         Name = "Viewport",
         Parent = self.Frame,
@@ -3347,30 +2712,19 @@ function ESPPreview.new(parent, config: {[string]: any}?)
     self:_buildEnvironment()
     self:_buildAllTargets()
 
-    -- Apply initial config overrides
-    if config then
-        for k, v in pairs(config) do
-            if self._settings[k] ~= nil then
-                self._settings[k] = v
-            end
-        end
+    for k, v in pairs(config) do
+        if self._settings[k] ~= nil then self._settings[k] = v end
     end
 
     self:_applySettings()
-
     return self
 end
-
---------------------------------------------------------------------------------
--- Environment (subtle ground / buildings / horizon)
---------------------------------------------------------------------------------
 
 function ESPPreview:_buildEnvironment()
     local vp = self._viewport
     local envColor = Color3.fromRGB(18, 20, 18)
     local envColorDark = Color3.fromRGB(15, 17, 15)
 
-    -- Horizon line
     Theme.Create("Frame", {
         Name = "Horizon",
         Parent = vp,
@@ -3381,7 +2735,6 @@ function ESPPreview:_buildEnvironment()
         BorderSizePixel = 0,
     })
 
-    -- Ground plane
     Theme.Create("Frame", {
         Name = "Ground",
         Parent = vp,
@@ -3392,7 +2745,6 @@ function ESPPreview:_buildEnvironment()
         BorderSizePixel = 0,
     })
 
-    -- Building / crate shapes
     local shapes = {
         { size = UDim2.new(0.12, 0, 0.30, 0), pos = UDim2.new(0.05, 0, 0.70, 0) },
         { size = UDim2.new(0.08, 0, 0.18, 0), pos = UDim2.new(0.88, 0, 0.72, 0) },
@@ -3414,10 +2766,6 @@ function ESPPreview:_buildEnvironment()
     end
 end
 
---------------------------------------------------------------------------------
--- Dummy Target Construction
---------------------------------------------------------------------------------
-
 function ESPPreview:_buildAllTargets()
     for i = 1, 8 do
         self._targets[i] = self:_buildTarget(i)
@@ -3428,7 +2776,6 @@ function ESPPreview:_buildTarget(index)
     local data = DUMMY_TARGETS[index]
     local s = data.scale
 
-    -- Scaled dimensions
     local headSize  = math.floor(BASE_HEAD * s + 0.5)
     local bodyW     = math.floor(BASE_BODY_W * s + 0.5)
     local bodyH     = math.floor(BASE_BODY_H * s + 0.5)
@@ -3437,34 +2784,25 @@ function ESPPreview:_buildTarget(index)
     local legGap    = math.max(1, math.floor(LEG_GAP * s + 0.5))
     local armLen    = math.floor(ARM_LENGTH * s + 0.5)
 
-    -- Total character dimensions (for bounding calculations)
     local totalLegsW = legW * 2 + legGap
     local charW = math.max(headSize, bodyW, totalLegsW)
     local charH = headSize + bodyH + legH
-
-    -- Bounding box dimensions
     local boxW = charW + BOX_PAD * 2
     local boxH = charH + BOX_PAD * 2
 
-    -- Container for the entire target (positioned at center)
     local container = Theme.Create("Frame", {
         Name = "Target_" .. index,
         Parent = self._viewport,
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = data.pos,
-        Size = UDim2.new(0, boxW + 40, 0, boxH + 36), -- extra room for labels
+        Size = UDim2.new(0, boxW + 40, 0, boxH + 36),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
     })
 
-    -- The "origin" for the character is the center of the bounding box within container
-    -- We'll use a sub-frame to hold everything bounding-box relative
     local originX = math.floor((boxW + 40) / 2)
-    local originY = math.floor((boxH + 36) / 2) - 4 -- bias up a bit for distance label
+    local originY = math.floor((boxH + 36) / 2) - 4
 
-    -- =========================================================================
-    -- Silhouette parts
-    -- =========================================================================
     local silhouette = Theme.Create("Frame", {
         Name = "Silhouette",
         Parent = container,
@@ -3475,8 +2813,7 @@ function ESPPreview:_buildTarget(index)
         BorderSizePixel = 0,
     })
 
-    -- Head (centered horizontally, top)
-    local headFrame = Theme.Create("Frame", {
+    Theme.Create("Frame", {
         Name = "Head",
         Parent = silhouette,
         AnchorPoint = Vector2.new(0.5, 0),
@@ -3486,8 +2823,7 @@ function ESPPreview:_buildTarget(index)
         BorderSizePixel = 0,
     })
 
-    -- Body (centered, below head)
-    local bodyFrame = Theme.Create("Frame", {
+    Theme.Create("Frame", {
         Name = "Body",
         Parent = silhouette,
         AnchorPoint = Vector2.new(0.5, 0),
@@ -3497,7 +2833,6 @@ function ESPPreview:_buildTarget(index)
         BorderSizePixel = 0,
     })
 
-    -- Left leg
     local leftLegX = math.floor(charW / 2) - legGap / 2 - legW
     Theme.Create("Frame", {
         Name = "LeftLeg",
@@ -3508,7 +2843,6 @@ function ESPPreview:_buildTarget(index)
         BorderSizePixel = 0,
     })
 
-    -- Right leg
     local rightLegX = math.floor(charW / 2) + math.ceil(legGap / 2)
     Theme.Create("Frame", {
         Name = "RightLeg",
@@ -3519,9 +2853,6 @@ function ESPPreview:_buildTarget(index)
         BorderSizePixel = 0,
     })
 
-    -- =========================================================================
-    -- ESP: Bounding Box (4 edge frames forming a rectangle)
-    -- =========================================================================
     local boxContainer = Theme.Create("Frame", {
         Name = "BoundingBox",
         Parent = container,
@@ -3533,47 +2864,11 @@ function ESPPreview:_buildTarget(index)
     })
 
     local bStroke = Theme.Sizes.BorderThickness
+    Theme.Create("Frame", { Name = "Top",    Parent = boxContainer, Size = UDim2.new(1, 0, 0, bStroke), Position = UDim2.new(0, 0, 0, 0),         BackgroundColor3 = self._settings.AccentColor, BorderSizePixel = 0 })
+    Theme.Create("Frame", { Name = "Bottom", Parent = boxContainer, Size = UDim2.new(1, 0, 0, bStroke), Position = UDim2.new(0, 0, 1, -bStroke),   BackgroundColor3 = self._settings.AccentColor, BorderSizePixel = 0 })
+    Theme.Create("Frame", { Name = "Left",   Parent = boxContainer, Size = UDim2.new(0, bStroke, 1, 0), Position = UDim2.new(0, 0, 0, 0),         BackgroundColor3 = self._settings.AccentColor, BorderSizePixel = 0 })
+    Theme.Create("Frame", { Name = "Right",  Parent = boxContainer, Size = UDim2.new(0, bStroke, 1, 0), Position = UDim2.new(1, -bStroke, 0, 0),   BackgroundColor3 = self._settings.AccentColor, BorderSizePixel = 0 })
 
-    -- Top edge
-    Theme.Create("Frame", {
-        Name = "Top",
-        Parent = boxContainer,
-        Size = UDim2.new(1, 0, 0, bStroke),
-        Position = UDim2.new(0, 0, 0, 0),
-        BackgroundColor3 = self._settings.AccentColor,
-        BorderSizePixel = 0,
-    })
-    -- Bottom edge
-    Theme.Create("Frame", {
-        Name = "Bottom",
-        Parent = boxContainer,
-        Size = UDim2.new(1, 0, 0, bStroke),
-        Position = UDim2.new(0, 0, 1, -bStroke),
-        BackgroundColor3 = self._settings.AccentColor,
-        BorderSizePixel = 0,
-    })
-    -- Left edge
-    Theme.Create("Frame", {
-        Name = "Left",
-        Parent = boxContainer,
-        Size = UDim2.new(0, bStroke, 1, 0),
-        Position = UDim2.new(0, 0, 0, 0),
-        BackgroundColor3 = self._settings.AccentColor,
-        BorderSizePixel = 0,
-    })
-    -- Right edge
-    Theme.Create("Frame", {
-        Name = "Right",
-        Parent = boxContainer,
-        Size = UDim2.new(0, bStroke, 1, 0),
-        Position = UDim2.new(1, -bStroke, 0, 0),
-        BackgroundColor3 = self._settings.AccentColor,
-        BorderSizePixel = 0,
-    })
-
-    -- =========================================================================
-    -- ESP: Health Bar (left side of bounding box)
-    -- =========================================================================
     local healthBarW = 2
     local healthPct = data.health / 100
 
@@ -3588,7 +2883,7 @@ function ESPPreview:_buildTarget(index)
         ClipsDescendants = true,
     })
 
-    local healthFill = Theme.Create("Frame", {
+    Theme.Create("Frame", {
         Name = "HealthFill",
         Parent = healthBarBg,
         AnchorPoint = Vector2.new(0, 1),
@@ -3598,9 +2893,6 @@ function ESPPreview:_buildTarget(index)
         BorderSizePixel = 0,
     })
 
-    -- =========================================================================
-    -- ESP: Name Label (above bounding box)
-    -- =========================================================================
     local nameLabel = Theme.Create("TextLabel", {
         Name = "NameLabel",
         Parent = container,
@@ -3616,9 +2908,6 @@ function ESPPreview:_buildTarget(index)
         TextYAlignment = Enum.TextYAlignment.Bottom,
     })
 
-    -- =========================================================================
-    -- ESP: Weapon Label (below name, above box)
-    -- =========================================================================
     local weaponLabel = Theme.Create("TextLabel", {
         Name = "WeaponLabel",
         Parent = container,
@@ -3634,9 +2923,6 @@ function ESPPreview:_buildTarget(index)
         TextYAlignment = Enum.TextYAlignment.Bottom,
     })
 
-    -- =========================================================================
-    -- ESP: Distance Label (below bounding box)
-    -- =========================================================================
     local dist = distanceFromScale(data.scale)
     local distLabel = Theme.Create("TextLabel", {
         Name = "DistLabel",
@@ -3653,9 +2939,6 @@ function ESPPreview:_buildTarget(index)
         TextYAlignment = Enum.TextYAlignment.Top,
     })
 
-    -- =========================================================================
-    -- ESP: Skeleton Lines
-    -- =========================================================================
     local skeletonContainer = Theme.Create("Frame", {
         Name = "Skeleton",
         Parent = container,
@@ -3666,11 +2949,8 @@ function ESPPreview:_buildTarget(index)
         BorderSizePixel = 0,
     })
 
-    -- Skeleton joint coords (relative to skeletonContainer center)
-    local skCX = math.floor((charW + armLen * 2 + 4) / 2) -- center X
-    local skCY = math.floor((charH + 4) / 2)              -- center Y
-
-    -- Joint positions (pixel coords in skeletonContainer)
+    local skCX = math.floor((charW + armLen * 2 + 4) / 2)
+    local skCY = math.floor((charH + 4) / 2)
     local headCenter  = { x = skCX, y = skCY - math.floor(charH / 2) + math.floor(headSize / 2) }
     local bodyTop     = { x = skCX, y = skCY - math.floor(charH / 2) + headSize }
     local bodyBottom  = { x = skCX, y = skCY - math.floor(charH / 2) + headSize + bodyH }
@@ -3684,61 +2964,41 @@ function ESPPreview:_buildTarget(index)
     local skelTransparency = 0.35
     local skelColor = Theme.Colors.ESPSkeleton
 
-    -- Head → body top
     createLine(skeletonContainer, headCenter.x, headCenter.y, bodyTop.x, bodyTop.y, skelColor, skelTransparency)
-    -- Body top → body bottom (spine)
     createLine(skeletonContainer, bodyTop.x, bodyTop.y, bodyBottom.x, bodyBottom.y, skelColor, skelTransparency)
-    -- Body top → left arm
     createLine(skeletonContainer, bodyTop.x, bodyTop.y, leftArmEnd.x, leftArmEnd.y, skelColor, skelTransparency)
-    -- Body top → right arm
     createLine(skeletonContainer, bodyTop.x, bodyTop.y, rightArmEnd.x, rightArmEnd.y, skelColor, skelTransparency)
-    -- Body bottom → left knee
     createLine(skeletonContainer, bodyBottom.x, bodyBottom.y, leftKnee.x, leftKnee.y, skelColor, skelTransparency)
-    -- Left knee → left foot
     createLine(skeletonContainer, leftKnee.x, leftKnee.y, leftFoot.x, leftFoot.y, skelColor, skelTransparency)
-    -- Body bottom → right knee
     createLine(skeletonContainer, bodyBottom.x, bodyBottom.y, rightKnee.x, rightKnee.y, skelColor, skelTransparency)
-    -- Right knee → right foot
     createLine(skeletonContainer, rightKnee.x, rightKnee.y, rightFoot.x, rightFoot.y, skelColor, skelTransparency)
 
-    -- =========================================================================
-    -- Bundle references for toggling
-    -- =========================================================================
     return {
-        container       = container,
-        silhouette      = silhouette,
-        boxContainer    = boxContainer,
-        healthBarBg     = healthBarBg,
-        healthFill      = healthFill,
-        nameLabel       = nameLabel,
-        weaponLabel     = weaponLabel,
-        distLabel       = distLabel,
+        container         = container,
+        silhouette        = silhouette,
+        boxContainer      = boxContainer,
+        healthBarBg       = healthBarBg,
+        nameLabel         = nameLabel,
+        weaponLabel       = weaponLabel,
+        distLabel         = distLabel,
         skeletonContainer = skeletonContainer,
-        data            = data,
+        data              = data,
     }
 end
-
---------------------------------------------------------------------------------
--- Settings Application
---------------------------------------------------------------------------------
 
 function ESPPreview:_applySettings()
     local s = self._settings
     local count = math.clamp(s.TargetCount, 1, 8)
-
     for i, t in ipairs(self._targets) do
         local visible = i <= count
         t.container.Visible = visible
-
         if visible then
-            t.boxContainer.Visible = s.ShowBoxes
-            t.nameLabel.Visible = s.ShowNames
-            t.healthBarBg.Visible = s.ShowHealth
-            t.distLabel.Visible = s.ShowDistance
-            t.skeletonContainer.Visible = s.ShowSkeleton
-            t.weaponLabel.Visible = s.ShowWeapons
-
-            -- Update accent color on bounding box edges
+            t.boxContainer.Visible        = s.ShowBoxes
+            t.nameLabel.Visible           = s.ShowNames
+            t.healthBarBg.Visible         = s.ShowHealth
+            t.distLabel.Visible           = s.ShowDistance
+            t.skeletonContainer.Visible   = s.ShowSkeleton
+            t.weaponLabel.Visible         = s.ShowWeapons
             if s.AccentColor then
                 for _, child in ipairs(t.boxContainer:GetChildren()) do
                     if child:IsA("Frame") then
@@ -3750,19 +3010,11 @@ function ESPPreview:_applySettings()
     end
 end
 
---------------------------------------------------------------------------------
--- Public API
---------------------------------------------------------------------------------
-
 function ESPPreview:Update(settings)
     if not settings then return end
-
     for k, v in pairs(settings) do
-        if self._settings[k] ~= nil then
-            self._settings[k] = v
-        end
+        if self._settings[k] ~= nil then self._settings[k] = v end
     end
-
     self:_applySettings()
 end
 
@@ -3781,12 +3033,9 @@ function ESPPreview:SetEnabled(enabled)
 end
 
 function ESPPreview:Destroy()
-    for _, conn in ipairs(self._connections) do
-        conn:Disconnect()
-    end
+    for _, conn in ipairs(self._connections) do conn:Disconnect() end
     self._connections = {}
     self._targets = {}
-
     if self.Frame then
         self.Frame:Destroy()
         self.Frame = nil
@@ -3794,26 +3043,10 @@ function ESPPreview:Destroy()
 end
 
 return ESPPreview
-
 end)()
 
 -- [Loader]
 _M["Loader"] = (function()
---[[
-    CSGOLib / Loader.lua
-    ====================
-    Premium CS:GO-style authentication key-entry window.
-    Displays a centered 340×380 dark panel with key input, status
-    feedback, animated progress bar, and full fade-in / fade-out
-    transitions.  Must be shown before the main UI is revealed.
-
-    API:
-        Loader.new(config) -> Loader
-        Loader:Show()
-        Loader:Hide()
-        Loader:Destroy()
---]]
-
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -3821,69 +3054,35 @@ local Players = game:GetService("Players")
 
 local Theme = _M["Theme"]
 
---------------------------------------------------------------------------------
--- Helpers
---------------------------------------------------------------------------------
-
-local function tween(instance, duration, props: {[string]: any}, style: Enum.EasingStyle?, dir: Enum.EasingDirection?)
-    local info = TweenInfo.new(
-        duration,
-        style or Theme.Animation.EaseStyle,
-        dir or Theme.Animation.EaseOut
-    )
+local function tween(instance, duration, props, style, dir)
+    local info = TweenInfo.new(duration, style or Theme.Animation.EaseStyle, dir or Theme.Animation.EaseOut)
     local t = TweenService:Create(instance, info, props)
     t:Play()
     return t
 end
 
-local function setProps(instance, props)
-    for k, v in pairs(props) do
-        (instance)[k] = v
-    end
-end
-
---------------------------------------------------------------------------------
--- Loader class
---------------------------------------------------------------------------------
-
 local Loader = {}
 Loader.__index = Loader
 
-export type LoaderConfig = {
-    Title?,
-    Version?,
-    KeyLength?,
-    VerifyCallback: ((key) -> (boolean, string?))?,
-    GetKeyURL?,
-    TestMode?,
-    OnSuccess: (() -> ())?,
-}
-
-function Loader.new(config: LoaderConfig)
+function Loader.new(config)
     local self = setmetatable({}, Loader)
 
-    -- Config defaults
-    self._title       = config.Title or "PROJECT"
-    self._version     = config.Version or "1.0.0"
-    self._keyLength   = config.KeyLength or 19
-    self._verify      = config.VerifyCallback
-    self._getKeyURL   = config.GetKeyURL
-    self._testMode    = config.TestMode or false
-    self._onSuccess   = config.OnSuccess
+    self._title      = config.Title or "PROJECT"
+    self._version    = config.Version or "1.0.0"
+    self._keyLength  = config.KeyLength or 19
+    self._verify     = config.VerifyCallback
+    self._getKeyURL  = config.GetKeyURL
+    self._testMode   = config.TestMode or false
+    self._onSuccess  = config.OnSuccess
 
-    -- State
-    self._verifying   = false
-    self._connections  = {}
-    self._tweens       = {}
-    self._destroyed    = false
+    self._verifying  = false
+    self._connections = {}
+    self._tweens     = {}
+    self._destroyed  = false
 
     self:_build()
     return self
 end
-
---------------------------------------------------------------------------------
--- Build UI hierarchy
---------------------------------------------------------------------------------
 
 function Loader:_build()
     local C = Theme.Colors
@@ -3892,7 +3091,6 @@ function Loader:_build()
     local Sz = Theme.Sizes
     local Cn = Theme.Corner
 
-    -- ScreenGui -----------------------------------------------------------------
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "CSGOLib_Loader"
     screenGui.ResetOnSpawn = false
@@ -3910,7 +3108,7 @@ function Loader:_build()
     if not parentedToCoreGui then
         local player = Players.LocalPlayer
         if not player then
-            player = Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
+            Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
             player = Players.LocalPlayer
         end
         if player then
@@ -3919,7 +3117,6 @@ function Loader:_build()
     end
     self._screenGui = screenGui
 
-    -- Overlay -------------------------------------------------------------------
     local overlay = Theme.Create("Frame", {
         Name = "Overlay",
         Size = UDim2.new(1, 0, 1, 0),
@@ -3931,7 +3128,6 @@ function Loader:_build()
     })
     self._overlay = overlay
 
-    -- Main panel ----------------------------------------------------------------
     local panel = Theme.Create("Frame", {
         Name = "Panel",
         Size = UDim2.new(0, Sz.LoaderWidth, 0, Sz.LoaderHeight),
@@ -3945,12 +3141,10 @@ function Loader:_build()
     Theme.ApplyCorner(panel, Cn.Small)
     self._panel = panel
 
-    -- Panel border
     local panelStroke = Theme.ApplyBorder(panel, C.Border)
     panelStroke.Transparency = 1
     self._panelStroke = panelStroke
 
-    -- Inner container (padding)
     local inner = Theme.Create("Frame", {
         Name = "Inner",
         Size = UDim2.new(1, 0, 1, 0),
@@ -3958,9 +3152,7 @@ function Loader:_build()
         Parent = panel,
     })
 
-    ---------------------------------------------------------------------------
-    -- 1. Header Bar (30px)
-    ---------------------------------------------------------------------------
+    -- Header
     local header = Theme.Create("Frame", {
         Name = "Header",
         Size = UDim2.new(1, 0, 0, 30),
@@ -4005,7 +3197,6 @@ function Loader:_build()
     })
     self._versionLabel = versionLabel
 
-    -- Header bottom border line
     local headerLine = Theme.Create("Frame", {
         Name = "HeaderLine",
         Size = UDim2.new(1, 0, 0, Sz.BorderThickness),
@@ -4018,9 +3209,7 @@ function Loader:_build()
     })
     self._headerLine = headerLine
 
-    ---------------------------------------------------------------------------
-    -- 2. Logo Area (~50px below header)
-    ---------------------------------------------------------------------------
+    -- Logo
     local logoArea = Theme.Create("Frame", {
         Name = "LogoArea",
         Size = UDim2.new(1, 0, 0, 50),
@@ -4061,9 +3250,7 @@ function Loader:_build()
     })
     self._logoName = logoName
 
-    ---------------------------------------------------------------------------
-    -- 3. Auth Section labels
-    ---------------------------------------------------------------------------
+    -- Auth section
     local authY = 30 + S.Large + 50 + S.Medium
 
     local authLabel = Theme.Create("TextLabel", {
@@ -4098,9 +3285,7 @@ function Loader:_build()
     })
     self._authDesc = authDesc
 
-    ---------------------------------------------------------------------------
-    -- 4. Key Input Field
-    ---------------------------------------------------------------------------
+    -- Key input
     local inputY = authY + 14 + S.Tiny + 12 + S.Large
 
     local inputFrame = Theme.Create("Frame", {
@@ -4139,31 +3324,22 @@ function Loader:_build()
     })
     self._textBox = textBox
 
-    -- Auto-uppercase
     self:_connect(textBox:GetPropertyChangedSignal("Text"), function()
         local upper = string.upper(textBox.Text)
-        if textBox.Text ~= upper then
-            textBox.Text = upper
-        end
+        if textBox.Text ~= upper then textBox.Text = upper end
     end)
 
-    -- Focus / unfocus border color
     self:_connect(textBox.Focused, function()
         tween(self._inputStroke, Theme.Animation.Fast, {Color = C.Accent})
     end)
     self:_connect(textBox.FocusLost, function(enterPressed)
         tween(self._inputStroke, Theme.Animation.Fast, {Color = C.Border})
-        if enterPressed then
-            self:_submit()
-        end
+        if enterPressed then self:_submit() end
     end)
 
-    ---------------------------------------------------------------------------
-    -- 5. Buttons
-    ---------------------------------------------------------------------------
+    -- Buttons
     local btnY = inputY + 28 + S.Medium
 
-    -- UNLOCK button
     local unlockBtn = Theme.Create("TextButton", {
         Name = "UnlockBtn",
         Size = UDim2.new(1, -S.XLarge * 2, 0, 28),
@@ -4183,20 +3359,15 @@ function Loader:_build()
     self._unlockBtn = unlockBtn
 
     self:_connect(unlockBtn.MouseEnter, function()
-        if not self._verifying then
-            tween(unlockBtn, Theme.Animation.Fast, {BackgroundColor3 = C.AccentHover})
-        end
+        if not self._verifying then tween(unlockBtn, Theme.Animation.Fast, {BackgroundColor3 = C.AccentHover}) end
     end)
     self:_connect(unlockBtn.MouseLeave, function()
-        if not self._verifying then
-            tween(unlockBtn, Theme.Animation.Fast, {BackgroundColor3 = C.Accent})
-        end
+        if not self._verifying then tween(unlockBtn, Theme.Animation.Fast, {BackgroundColor3 = C.Accent}) end
     end)
     self:_connect(unlockBtn.Activated, function()
         self:_submit()
     end)
 
-    -- GET KEY button
     local getKeyY = btnY + 28 + S.Medium
     local getKeyBtn = Theme.Create("TextButton", {
         Name = "GetKeyBtn",
@@ -4230,9 +3401,7 @@ function Loader:_build()
         self:_openGetKey()
     end)
 
-    ---------------------------------------------------------------------------
-    -- 6. Status Area
-    ---------------------------------------------------------------------------
+    -- Status
     local statusY = getKeyY + 24 + S.Large
 
     local statusLabel = Theme.Create("TextLabel", {
@@ -4251,7 +3420,6 @@ function Loader:_build()
     })
     self._statusLabel = statusLabel
 
-    -- Progress bar container
     local progressBg = Theme.Create("Frame", {
         Name = "ProgressBg",
         Size = UDim2.new(1, -S.XLarge * 2, 0, 2),
@@ -4276,9 +3444,7 @@ function Loader:_build()
     Theme.ApplyCorner(progressFill, Cn.Tiny)
     self._progressFill = progressFill
 
-    ---------------------------------------------------------------------------
-    -- 7. Footer (18px at bottom)
-    ---------------------------------------------------------------------------
+    -- Footer
     local footer = Theme.Create("Frame", {
         Name = "Footer",
         Size = UDim2.new(1, 0, 0, 18),
@@ -4288,7 +3454,6 @@ function Loader:_build()
         Parent = inner,
     })
 
-    -- Footer top border line
     local footerLine = Theme.Create("Frame", {
         Name = "FooterLine",
         Size = UDim2.new(1, 0, 0, Sz.BorderThickness),
@@ -4335,12 +3500,10 @@ function Loader:_build()
     self._connectedLabel = connectedLabel
     self:_updateConnectionStatus()
 
-    -- Collect all text elements for batch fade
     self._fadeElements = {
         titleLabel, versionLabel, logoGlyph, logoName,
         authLabel, authDesc, textBox, statusLabel,
-        buildLabel, connectedLabel,
-        unlockBtn, getKeyBtn,
+        buildLabel, connectedLabel, unlockBtn, getKeyBtn,
     }
     self._fadeFrames = {
         header, inputFrame, progressBg, progressFill,
@@ -4351,11 +3514,7 @@ function Loader:_build()
     }
 end
 
---------------------------------------------------------------------------------
--- Connection / cleanup helpers
---------------------------------------------------------------------------------
-
-function Loader:_connect(signal: RBXScriptSignal, fn: (...any) -> ())
+function Loader:_connect(signal, fn)
     local conn = signal:Connect(fn)
     table.insert(self._connections, conn)
     return conn
@@ -4366,12 +3525,7 @@ function Loader:_trackTween(t)
     return t
 end
 
---------------------------------------------------------------------------------
--- Connection status indicator
---------------------------------------------------------------------------------
-
 function Loader:_updateConnectionStatus()
-    -- Simple heuristic: if we can reach the server we're "connected"
     local isConnected = game:GetService("NetworkClient") ~= nil
     if isConnected then
         local greenHex = string.format("#%02X%02X%02X",
@@ -4388,15 +3542,10 @@ function Loader:_updateConnectionStatus()
     end
 end
 
---------------------------------------------------------------------------------
--- Show / Hide
---------------------------------------------------------------------------------
-
 function Loader:Show()
     if self._destroyed then return end
     self._screenGui.Enabled = true
 
-    -- Reset transparencies to fully invisible
     self._overlay.BackgroundTransparency = 1
     self._panel.BackgroundTransparency = 1
     self._panelStroke.Transparency = 1
@@ -4418,7 +3567,6 @@ function Loader:Show()
         st.Transparency = 1
     end
 
-    -- Animate in
     local duration = 0.4
     local style = Theme.Animation.EaseStyle
     local dir = Enum.EasingDirection.Out
@@ -4443,16 +3591,13 @@ function Loader:Show()
         tween(st, duration, {Transparency = 0}, style, dir)
     end
 
-    -- Progress bar stays hidden until needed
     self._progressBg.BackgroundTransparency = 1
     self._progressFill.BackgroundTransparency = 1
     self._progressFill.Size = UDim2.new(0, 0, 1, 0)
 end
 
-function Loader:Hide(callback: (() -> ())?)
+function Loader:Hide(callback)
     if self._destroyed then return end
-
-    -- Stop dot animation if running
     self:_stopDotAnimation()
 
     local duration = 0.5
@@ -4480,41 +3625,25 @@ function Loader:Hide(callback: (() -> ())?)
     end
 
     task.delay(duration + 0.05, function()
-        if not self._destroyed then
-            self._screenGui.Enabled = false
-        end
-        if callback then
-            callback()
-        end
+        if not self._destroyed then self._screenGui.Enabled = false end
+        if callback then callback() end
     end)
 end
 
 function Loader:Destroy()
     if self._destroyed then return end
     self._destroyed = true
-
     self:_stopDotAnimation()
     self:_stopProgressAnimation()
-
-    for _, conn in ipairs(self._connections) do
-        conn:Disconnect()
-    end
+    for _, conn in ipairs(self._connections) do conn:Disconnect() end
     self._connections = {}
-
-    for _, t in ipairs(self._tweens) do
-        t:Cancel()
-    end
+    for _, t in ipairs(self._tweens) do t:Cancel() end
     self._tweens = {}
-
     if self._screenGui then
         self._screenGui:Destroy()
         self._screenGui = nil
     end
 end
-
---------------------------------------------------------------------------------
--- Status helpers
---------------------------------------------------------------------------------
 
 function Loader:_setStatus(text, color)
     self._statusLabel.Text = text
@@ -4528,8 +3657,7 @@ function Loader:_startDotAnimation()
     self._dotThread = task.spawn(function()
         while self._dotRunning and not self._destroyed do
             dotCount = (dotCount % 3) + 1
-            local dots = string.rep(".", dotCount)
-            self._statusLabel.Text = "Verifying" .. dots
+            self._statusLabel.Text = "Verifying" .. string.rep(".", dotCount)
             task.wait(0.35)
         end
     end)
@@ -4542,10 +3670,6 @@ function Loader:_stopDotAnimation()
         self._dotThread = nil
     end
 end
-
---------------------------------------------------------------------------------
--- Progress bar helpers
---------------------------------------------------------------------------------
 
 function Loader:_showProgress()
     self._progressBg.BackgroundTransparency = 0
@@ -4560,7 +3684,6 @@ function Loader:_startProgressAnimation()
     self._progressAnimRunning = true
     self._progressThread = task.spawn(function()
         while self._progressAnimRunning and not self._destroyed do
-            -- Sweep left to right
             self._progressFill.Size = UDim2.new(0, 0, 1, 0)
             self._progressFill.Position = UDim2.new(0, 0, 0, 0)
             local t1 = tween(self._progressFill, 0.6, {Size = UDim2.new(0.5, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0)})
@@ -4592,7 +3715,7 @@ function Loader:_progressFail()
     self:_stopProgressAnimation()
     self._progressFill.Position = UDim2.new(0, 0, 0, 0)
     self._progressFill.BackgroundColor3 = Theme.Colors.Error
-    local t = tween(self._progressFill, 0.3, {Size = UDim2.new(1, 0, 1, 0)})
+    tween(self._progressFill, 0.3, {Size = UDim2.new(1, 0, 1, 0)})
     task.delay(1.2, function()
         if not self._destroyed then
             tween(self._progressBg, 0.2, {BackgroundTransparency = 1})
@@ -4607,16 +3730,11 @@ function Loader:_hideProgress()
     tween(self._progressFill, 0.2, {BackgroundTransparency = 1})
 end
 
---------------------------------------------------------------------------------
--- Input shake animation
---------------------------------------------------------------------------------
-
 function Loader:_shakeInput()
     local frame = self._inputFrame
     local originalPos = frame.Position
     local offsetPx = 3
     local cycleDuration = 0.05
-
     task.spawn(function()
         for _ = 1, 3 do
             if self._destroyed then return end
@@ -4629,14 +3747,9 @@ function Loader:_shakeInput()
             }, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
             t2.Completed:Wait()
         end
-        -- Return to original
         tween(frame, cycleDuration, {Position = originalPos}, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
     end)
 end
-
---------------------------------------------------------------------------------
--- Enable / disable controls
---------------------------------------------------------------------------------
 
 function Loader:_setControlsEnabled(enabled)
     self._textBox.TextEditable = enabled
@@ -4649,31 +3762,19 @@ function Loader:_setControlsEnabled(enabled)
     end
 end
 
---------------------------------------------------------------------------------
--- Open GET KEY URL
---------------------------------------------------------------------------------
-
 function Loader:_openGetKey()
     local url = self._getKeyURL
     if not url or url == "" then return end
-
-    -- Try multiple methods to open URL or fall back to clipboard
     local opened = false
-
     local success = pcall(function()
         local clipboard = setclipboard or toclipboard
-        if clipboard then
-            clipboard(url)
-            opened = true
-        end
+        if clipboard then clipboard(url) opened = true end
     end)
-
     if opened then
         self:_setStatus("Link copied to clipboard", Theme.Colors.TextDim)
     else
         self:_setStatus("Visit: " .. url, Theme.Colors.TextDim)
     end
-
     task.delay(2, function()
         if not self._destroyed and not self._verifying then
             self:_setStatus("Ready", Theme.Colors.TextDark)
@@ -4681,13 +3782,8 @@ function Loader:_openGetKey()
     end)
 end
 
---------------------------------------------------------------------------------
--- Submission flow
---------------------------------------------------------------------------------
-
 function Loader:_submit()
     if self._verifying or self._destroyed then return end
-
     local key = string.gsub(self._textBox.Text, "%s+", "")
     if key == "" then
         self:_shakeInput()
@@ -4702,8 +3798,6 @@ function Loader:_submit()
 
     self._verifying = true
     self:_setControlsEnabled(false)
-
-    -- Status: verifying with animated dots
     self:_setStatus("Verifying...", Theme.Colors.TextDim)
     self:_startDotAnimation()
     self:_showProgress()
@@ -4712,12 +3806,10 @@ function Loader:_submit()
         local success, message
 
         if self._testMode then
-            -- TestMode: fake delay then always succeed
             task.wait(1)
             success = true
             message = nil
         elseif self._verify then
-            -- Call the verify callback
             local callOk, callResult, callMsg = pcall(function()
                 return self._verify(key)
             end)
@@ -4725,14 +3817,12 @@ function Loader:_submit()
                 success = callResult
                 message = callMsg
             else
-                -- pcall failure — connection/script error
                 self:_stopDotAnimation()
                 self:_setStatus("⚠ Connection failed", Theme.Colors.Warning)
                 self:_stopProgressAnimation()
                 self._progressFill.Position = UDim2.new(0, 0, 0, 0)
                 self._progressFill.BackgroundColor3 = Theme.Colors.Warning
                 tween(self._progressFill, 0.3, {Size = UDim2.new(1, 0, 1, 0)})
-
                 task.wait(1.5)
                 if not self._destroyed then
                     self._verifying = false
@@ -4743,36 +3833,27 @@ function Loader:_submit()
                 return
             end
         else
-            -- No callback provided, just succeed
             task.wait(0.5)
             success = true
         end
 
-        -- Stop dot animation
         self:_stopDotAnimation()
-
         if self._destroyed then return end
 
         if success then
-            -- ✓ Success
             self:_setStatus("✓ Access granted", Theme.Colors.Success)
             self:_progressSuccess()
-
             task.wait(0.8)
             if not self._destroyed then
                 self:Hide(function()
-                    if self._onSuccess then
-                        self._onSuccess()
-                    end
+                    if self._onSuccess then self._onSuccess() end
                 end)
             end
         else
-            -- ✕ Failure
             local errMsg = message or "Invalid key"
             self:_setStatus("✕ " .. errMsg, Theme.Colors.Error)
             self:_progressFail()
             self:_shakeInput()
-
             task.wait(1)
             if not self._destroyed then
                 self._verifying = false
@@ -4784,35 +3865,27 @@ function Loader:_submit()
 end
 
 return Loader
-
 end)()
 
 -- [Components_Section]
 _M["Components_Section"] = (function()
---[[
-    Section.lua
-    CS:GO-style collapsible section header with content frame.
-    Part of CSGOLib UI Library.
-]]
-
 local TweenService = game:GetService("TweenService")
 local Theme = _M["Theme"]
 
--- Lazy-required control components
-local Toggle = _M["Components_Toggle"]
-local Slider = _M["Components_Slider"]
-local Button = _M["Components_Button"]
-local Dropdown = _M["Components_Dropdown"]
-local Keybind = _M["Components_Keybind"]
+local Toggle    = _M["Components_Toggle"]
+local Slider    = _M["Components_Slider"]
+local Button    = _M["Components_Button"]
+local Dropdown  = _M["Components_Dropdown"]
+local Keybind   = _M["Components_Keybind"]
 local TextInput = _M["Components_TextInput"]
-local Divider = _M["Components_Divider"]
+local Divider   = _M["Components_Divider"]
 local ColorPicker = _M["Components_ColorPicker"]
 local SearchInput = _M["Components_SearchInput"]
 
 local Section = {}
 Section.__index = Section
 
-function Section.new(parent, config: any)
+function Section.new(parent, config)
     if type(config) == "string" then
         config = { Name = config }
     end
@@ -4824,10 +3897,9 @@ function Section.new(parent, config: any)
     local isOpen = (config.DefaultOpen ~= nil) and config.DefaultOpen or true
 
     self._connections = {}
-    self._components = {}
-    self._isOpen = isOpen
+    self._components  = {}
+    self._isOpen      = isOpen
 
-    -- Root container
     local root = Theme.Create("Frame", {
         Name = "Section_" .. (config.Name or "Section"),
         Size = UDim2.new(1, 0, 0, 0),
@@ -4837,7 +3909,6 @@ function Section.new(parent, config: any)
     })
     self.Frame = root
 
-    -- Header row
     local header = Theme.Create("Frame", {
         Name = "Header",
         Size = UDim2.new(1, 0, 0, 18),
@@ -4845,8 +3916,7 @@ function Section.new(parent, config: any)
         Parent = root,
     })
 
-    -- Toggle indicator (▾ / ▸)
-    local indicator? = nil
+    local indicator = nil
     if collapsible then
         indicator = Theme.Create("TextLabel", {
             Name = "Indicator",
@@ -4864,9 +3934,8 @@ function Section.new(parent, config: any)
         self._indicator = indicator
     end
 
-    -- Title label
     local titleOffset = collapsible and 12 or 0
-    local title = Theme.Create("TextLabel", {
+    Theme.Create("TextLabel", {
         Name = "Title",
         Size = UDim2.new(1, -titleOffset, 1, 0),
         Position = UDim2.new(0, titleOffset, 0, 0),
@@ -4880,7 +3949,6 @@ function Section.new(parent, config: any)
         Parent = header,
     })
 
-    -- Divider line below title
     local divider = Theme.Create("Frame", {
         Name = "Divider",
         Size = UDim2.new(1, 0, 0, Theme.Sizes.BorderThickness),
@@ -4889,7 +3957,6 @@ function Section.new(parent, config: any)
         Parent = root,
     })
 
-    -- Content frame for child controls
     local content = Theme.Create("Frame", {
         Name = "Content",
         Size = UDim2.new(1, 0, 0, 0),
@@ -4901,8 +3968,7 @@ function Section.new(parent, config: any)
     })
     self.ContentFrame = content
 
-    -- List layout inside content
-    local listLayout = Theme.Create("UIListLayout", {
+    Theme.Create("UIListLayout", {
         Name = "Layout",
         Padding = UDim.new(0, Theme.Spacing.Small),
         FillDirection = Enum.FillDirection.Vertical,
@@ -4911,8 +3977,7 @@ function Section.new(parent, config: any)
         Parent = content,
     })
 
-    -- Root list layout to stack header, divider, content vertically
-    local rootLayout = Theme.Create("UIListLayout", {
+    Theme.Create("UIListLayout", {
         Name = "RootLayout",
         Padding = UDim.new(0, Theme.Spacing.Tiny),
         FillDirection = Enum.FillDirection.Vertical,
@@ -4921,12 +3986,10 @@ function Section.new(parent, config: any)
         Parent = root,
     })
 
-    -- Layout orders
     header.LayoutOrder = 1
     divider.LayoutOrder = 2
     content.LayoutOrder = 3
 
-    -- Collapsible click handling
     if collapsible then
         local clickDetector = Theme.Create("TextButton", {
             Name = "ClickDetector",
@@ -4935,11 +3998,9 @@ function Section.new(parent, config: any)
             Text = "",
             Parent = header,
         })
-
-        local conn = clickDetector.MouseButton1Click:Connect(function()
+        table.insert(self._connections, clickDetector.MouseButton1Click:Connect(function()
             self:Toggle()
-        end)
-        table.insert(self._connections, conn)
+        end))
     end
 
     return self
@@ -4947,18 +4008,14 @@ end
 
 function Section:Toggle()
     self._isOpen = not self._isOpen
-
     if self._indicator then
         self._indicator.Text = self._isOpen and "▾" or "▸"
     end
-
     self.ContentFrame.Visible = self._isOpen
 end
 
 function Section:SetOpen(open)
-    if self._isOpen ~= open then
-        self:Toggle()
-    end
+    if self._isOpen ~= open then self:Toggle() end
 end
 
 function Section:CreateToggle(config)
@@ -4998,9 +4055,9 @@ function Section:CreateTextInput(config)
 end
 
 function Section:CreateDivider(config)
-    local divider = Divider.new(self.ContentFrame, config or {})
-    table.insert(self._components, divider)
-    return divider
+    local d = Divider.new(self.ContentFrame, config or {})
+    table.insert(self._components, d)
+    return d
 end
 
 function Section:CreateColorPicker(config)
@@ -5016,18 +4073,14 @@ function Section:CreateSearchInput(config)
 end
 
 function Section:Destroy()
-    for _, conn in self._connections do
-        conn:Disconnect()
-    end
+    for _, conn in self._connections do conn:Disconnect() end
     self._connections = {}
-
     for _, comp in self._components do
         if comp and type(comp.Destroy) == "function" then
             pcall(function() comp:Destroy() end)
         end
     end
     self._components = {}
-
     if self.Frame then
         self.Frame:Destroy()
         self.Frame = nil
@@ -5035,66 +4088,46 @@ function Section:Destroy()
 end
 
 return Section
-
 end)()
 
 -- [Window]
 _M["Window"] = (function()
---[[
-    Window.lua — CS:GO-style main application window
-    Part of CSGOLib — a premium Roblox UI library
-    
-    Creates a compact, draggable, CS:GO-inspired window with:
-    - Header bar with title, version, status, minimize/close buttons
-    - Sidebar with tab navigation and accent indicators
-    - Scrollable content area per tab
-    - Optional ESP preview panel
-    - Footer with build info and toggle key hint
-    - Toggle key support, minimize/restore, show/hide animations
-]]
-
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
-local Theme = _M["Theme"]
+local Theme     = _M["Theme"]
 local Draggable = _M["Utils_Draggable"]
 local Animation = _M["Utils_Animation"]
 local ESPPreview = _M["ESPPreview"]
 
--- Component requires
-local Toggle = _M["Components_Toggle"]
-local Slider = _M["Components_Slider"]
-local Button = _M["Components_Button"]
-local Dropdown = _M["Components_Dropdown"]
-local Keybind = _M["Components_Keybind"]
+local Toggle    = _M["Components_Toggle"]
+local Slider    = _M["Components_Slider"]
+local Button    = _M["Components_Button"]
+local Dropdown  = _M["Components_Dropdown"]
+local Keybind   = _M["Components_Keybind"]
 local TextInput = _M["Components_TextInput"]
-local Section = _M["Components_Section"]
-local Divider = _M["Components_Divider"]
+local Section   = _M["Components_Section"]
+local Divider   = _M["Components_Divider"]
 local ColorPicker = _M["Components_ColorPicker"]
 local SearchInput = _M["Components_SearchInput"]
 
---------------------------------------------------------------------------------
 -- Tab class
---------------------------------------------------------------------------------
 local Tab = {}
 Tab.__index = Tab
 
 function Tab.new(window, config)
-    if type(config) == "string" then
-        config = { Name = config }
-    end
+    if type(config) == "string" then config = { Name = config } end
     config = config or {}
 
     local self = setmetatable({}, Tab)
-    self._window = window
-    self._name = config.Name or "Tab"
-    self._icon = config.Icon
-    self._layoutOrder = config.LayoutOrder or 0
-    self._components = {}
-    self._espPreview = nil
-    self._hasPreview = false
+    self._window       = window
+    self._name         = config.Name or "Tab"
+    self._icon         = config.Icon
+    self._layoutOrder  = config.LayoutOrder or 0
+    self._components   = {}
+    self._espPreview   = nil
+    self._hasPreview   = false
 
-    -- Create sidebar button
     self._button = Theme.Create("TextButton", {
         Name = "Tab_" .. self._name,
         Size = UDim2.new(1, 0, 0, Theme.Sizes.TabHeight),
@@ -5106,7 +4139,6 @@ function Tab.new(window, config)
         ClipsDescendants = true,
     })
 
-    -- Accent indicator bar (left edge, 2px wide)
     self._indicator = Theme.Create("Frame", {
         Name = "Indicator",
         Size = UDim2.new(0, Theme.Sizes.TabIndicator, 1, 0),
@@ -5117,7 +4149,6 @@ function Tab.new(window, config)
         Parent = self._button,
     })
 
-    -- Tab label text
     local textOffset = 12
     local displayText = self._name
     if self._icon then
@@ -5139,7 +4170,6 @@ function Tab.new(window, config)
         Parent = self._button,
     })
 
-    -- Content container (scrollable)
     self._contentFrame = Theme.Create("ScrollingFrame", {
         Name = "Content_" .. self._name,
         Size = UDim2.new(1, 0, 1, 0),
@@ -5163,7 +4193,6 @@ function Tab.new(window, config)
     Theme.ApplyPadding(self._contentFrame, Theme.Spacing.Large, Theme.Spacing.Large, Theme.Spacing.Large, Theme.Spacing.Large)
     Theme.ApplyListLayout(self._contentFrame, Theme.Spacing.Small, Enum.FillDirection.Vertical, Enum.HorizontalAlignment.Left, Enum.VerticalAlignment.Top)
 
-    -- Hover effects
     self._hoverConn = self._button.MouseEnter:Connect(function()
         if self._window._activeTab ~= self then
             Animation.Tween(self._button, { BackgroundTransparency = 0, BackgroundColor3 = Theme.Colors.SurfaceHover }, Theme.Animation.Fast)
@@ -5178,7 +4207,6 @@ function Tab.new(window, config)
         end
     end)
 
-    -- Click to select
     self._clickConn = self._button.MouseButton1Click:Connect(function()
         self._window:_selectTab(self)
     end)
@@ -5244,9 +4272,9 @@ function Tab:CreateTextInput(config)
 end
 
 function Tab:CreateDivider(config)
-    local divider = Divider.new(self._contentFrame, config or {})
-    table.insert(self._components, divider)
-    return divider
+    local d = Divider.new(self._contentFrame, config or {})
+    table.insert(self._components, d)
+    return d
 end
 
 function Tab:CreateColorPicker(config)
@@ -5262,12 +4290,8 @@ function Tab:CreateSearchInput(config)
 end
 
 function Tab:CreateESPPreview(config)
-    if self._hasPreview then
-        return self._espPreview
-    end
+    if self._hasPreview then return self._espPreview end
     self._hasPreview = true
-
-    -- Tell the window to create/show the preview panel for this tab
     local previewPanel = self._window:_getOrCreatePreviewPanel()
     self._espPreview = ESPPreview.new(previewPanel, config)
     self._previewPanel = previewPanel
@@ -5280,48 +4304,40 @@ function Tab:Destroy()
     if self._hoverConn then self._hoverConn:Disconnect() end
     if self._leaveConn then self._leaveConn:Disconnect() end
     if self._clickConn then self._clickConn:Disconnect() end
-
     for _, component in ipairs(self._components) do
-        if component.Destroy then
-            component:Destroy()
-        end
+        if component.Destroy then component:Destroy() end
     end
     self._components = {}
-
     if self._button then self._button:Destroy() end
     if self._contentFrame then self._contentFrame:Destroy() end
 end
 
---------------------------------------------------------------------------------
 -- Window class
---------------------------------------------------------------------------------
 local Window = {}
 Window.__index = Window
 
-function Window.new(screenGui: ScreenGui, config)
+function Window.new(screenGui, config)
     local self = setmetatable({}, Window)
 
-    self._screenGui = screenGui
-    self._title = config.Title or "PROJECT"
-    self._version = config.Version or "v1.0.0"
-    self._toggleKey = config.ToggleKey or Enum.KeyCode.RightShift
-    self._tabs = {}
-    self._activeTab = nil
-    self._visible = true
-    self._minimized = false
+    self._screenGui   = screenGui
+    self._title       = config.Title or "PROJECT"
+    self._version     = config.Version or "v1.0.0"
+    self._toggleKey   = config.ToggleKey or Enum.KeyCode.RightShift
+    self._tabs        = {}
+    self._activeTab   = nil
+    self._visible     = true
+    self._minimized   = false
     self._connections = {}
     self._notificationManager = nil
     self._previewPanel = nil
-    self._fullHeight = Theme.Sizes.WindowHeight
+    self._fullHeight  = Theme.Sizes.WindowHeight
 
     self:_buildUI()
     self:_setupToggleKey()
-
     return self
 end
 
 function Window:_buildUI()
-    -- Main CanvasGroup for fade animations
     self._canvasGroup = Theme.Create("CanvasGroup", {
         Name = "WindowCanvas",
         Size = UDim2.new(0, Theme.Sizes.WindowWidth, 0, Theme.Sizes.WindowHeight),
@@ -5331,7 +4347,6 @@ function Window:_buildUI()
         Parent = self._screenGui,
     })
 
-    -- Main window frame
     self._frame = Theme.Create("Frame", {
         Name = "Window",
         Size = UDim2.new(1, 0, 1, 0),
@@ -5348,7 +4363,6 @@ function Window:_buildUI()
     self:_buildContentArea()
     self:_buildFooter()
 
-    -- Enable dragging via the header handle
     local cleanupDrag = Draggable.Enable(self._canvasGroup, self._dragHandle)
     table.insert(self._connections, { Disconnect = cleanupDrag })
 end
@@ -5363,7 +4377,6 @@ function Window:_buildHeader()
         Parent = self._frame,
     })
 
-    -- Bottom border for header
     Theme.Create("Frame", {
         Name = "HeaderBorder",
         Size = UDim2.new(1, 0, 0, Theme.Sizes.BorderThickness),
@@ -5373,7 +4386,6 @@ function Window:_buildHeader()
         Parent = self._header,
     })
 
-    -- Drag handle (covers header except button area on the right)
     self._dragHandle = Theme.Create("Frame", {
         Name = "DragHandle",
         Size = UDim2.new(1, -80, 1, 0),
@@ -5382,7 +4394,6 @@ function Window:_buildHeader()
         Parent = self._header,
     })
 
-    -- Left side container
     local leftContainer = Theme.Create("Frame", {
         Name = "Left",
         Size = UDim2.new(1, -80, 1, 0),
@@ -5400,7 +4411,6 @@ function Window:_buildHeader()
     leftLayout.SortOrder = Enum.SortOrder.LayoutOrder
     leftLayout.Parent = leftContainer
 
-    -- Logo character
     Theme.Create("TextLabel", {
         Name = "Logo",
         Size = UDim2.new(0, 14, 1, 0),
@@ -5415,7 +4425,6 @@ function Window:_buildHeader()
         Parent = leftContainer,
     })
 
-    -- Spacer after logo
     Theme.Create("Frame", {
         Name = "LogoSpacer",
         Size = UDim2.new(0, Theme.Spacing.Normal, 1, 0),
@@ -5424,7 +4433,6 @@ function Window:_buildHeader()
         Parent = leftContainer,
     })
 
-    -- Title
     Theme.Create("TextLabel", {
         Name = "Title",
         Size = UDim2.new(0, 0, 1, 0),
@@ -5440,7 +4448,6 @@ function Window:_buildHeader()
         Parent = leftContainer,
     })
 
-    -- Spacer after title
     Theme.Create("Frame", {
         Name = "TitleSpacer",
         Size = UDim2.new(0, Theme.Spacing.Medium, 1, 0),
@@ -5449,7 +4456,6 @@ function Window:_buildHeader()
         Parent = leftContainer,
     })
 
-    -- Version
     Theme.Create("TextLabel", {
         Name = "Version",
         Size = UDim2.new(0, 0, 1, 0),
@@ -5465,7 +4471,6 @@ function Window:_buildHeader()
         Parent = leftContainer,
     })
 
-    -- Right side container (status + buttons)
     local rightContainer = Theme.Create("Frame", {
         Name = "Right",
         Size = UDim2.new(0, 80, 1, 0),
@@ -5483,7 +4488,6 @@ function Window:_buildHeader()
     rightLayout.SortOrder = Enum.SortOrder.LayoutOrder
     rightLayout.Parent = rightContainer
 
-    -- Close button
     local closeBtn = Theme.Create("TextButton", {
         Name = "Close",
         Size = UDim2.new(0, 16, 0, 16),
@@ -5497,20 +4501,16 @@ function Window:_buildHeader()
         Parent = rightContainer,
     })
 
-    local closeBtnHover = closeBtn.MouseEnter:Connect(function()
+    table.insert(self._connections, closeBtn.MouseEnter:Connect(function()
         Animation.Tween(closeBtn, { TextColor3 = Theme.Colors.Error }, Theme.Animation.Fast)
-    end)
-    local closeBtnLeave = closeBtn.MouseLeave:Connect(function()
+    end))
+    table.insert(self._connections, closeBtn.MouseLeave:Connect(function()
         Animation.Tween(closeBtn, { TextColor3 = Theme.Colors.TextDim }, Theme.Animation.Fast)
-    end)
-    local closeBtnClick = closeBtn.MouseButton1Click:Connect(function()
+    end))
+    table.insert(self._connections, closeBtn.MouseButton1Click:Connect(function()
         self:Hide()
-    end)
-    table.insert(self._connections, closeBtnHover)
-    table.insert(self._connections, closeBtnLeave)
-    table.insert(self._connections, closeBtnClick)
+    end))
 
-    -- Minimize button
     local minimizeBtn = Theme.Create("TextButton", {
         Name = "Minimize",
         Size = UDim2.new(0, 16, 0, 16),
@@ -5524,20 +4524,16 @@ function Window:_buildHeader()
         Parent = rightContainer,
     })
 
-    local minBtnHover = minimizeBtn.MouseEnter:Connect(function()
+    table.insert(self._connections, minimizeBtn.MouseEnter:Connect(function()
         Animation.Tween(minimizeBtn, { TextColor3 = Theme.Colors.TextBright }, Theme.Animation.Fast)
-    end)
-    local minBtnLeave = minimizeBtn.MouseLeave:Connect(function()
+    end))
+    table.insert(self._connections, minimizeBtn.MouseLeave:Connect(function()
         Animation.Tween(minimizeBtn, { TextColor3 = Theme.Colors.TextDim }, Theme.Animation.Fast)
-    end)
-    local minBtnClick = minimizeBtn.MouseButton1Click:Connect(function()
+    end))
+    table.insert(self._connections, minimizeBtn.MouseButton1Click:Connect(function()
         self:_toggleMinimize()
-    end)
-    table.insert(self._connections, minBtnHover)
-    table.insert(self._connections, minBtnLeave)
-    table.insert(self._connections, minBtnClick)
+    end))
 
-    -- Status dot + text (before buttons)
     Theme.Create("TextLabel", {
         Name = "Status",
         Size = UDim2.new(0, 0, 1, 0),
@@ -5554,7 +4550,6 @@ function Window:_buildHeader()
         Parent = rightContainer,
     })
 
-    -- Gap between status and buttons
     Theme.Create("Frame", {
         Name = "StatusGap",
         Size = UDim2.new(0, Theme.Spacing.Medium, 1, 0),
@@ -5574,7 +4569,6 @@ function Window:_buildSidebar()
         Parent = self._frame,
     })
 
-    -- Right border for sidebar
     Theme.Create("Frame", {
         Name = "SidebarBorder",
         Size = UDim2.new(0, Theme.Sizes.BorderThickness, 1, 0),
@@ -5584,7 +4578,6 @@ function Window:_buildSidebar()
         Parent = self._sidebar,
     })
 
-    -- Tab container inside sidebar
     self._tabContainer = Theme.Create("Frame", {
         Name = "TabContainer",
         Size = UDim2.new(1, -Theme.Sizes.BorderThickness, 1, 0),
@@ -5605,7 +4598,6 @@ function Window:_buildSidebar()
 end
 
 function Window:_buildContentArea()
-    -- Content area container (right of sidebar, below header, above footer)
     self._contentArea = Theme.Create("Frame", {
         Name = "ContentArea",
         Size = UDim2.new(1, -Theme.Sizes.SidebarWidth, 1, -(Theme.Sizes.HeaderHeight + Theme.Sizes.FooterHeight)),
@@ -5617,7 +4609,6 @@ function Window:_buildContentArea()
         Parent = self._frame,
     })
 
-    -- Inner container for content (can be resized when preview panel appears)
     self._contentInner = Theme.Create("Frame", {
         Name = "ContentInner",
         Size = UDim2.new(1, 0, 1, 0),
@@ -5639,7 +4630,6 @@ function Window:_buildFooter()
         Parent = self._frame,
     })
 
-    -- Top border for footer
     Theme.Create("Frame", {
         Name = "FooterBorder",
         Size = UDim2.new(1, 0, 0, Theme.Sizes.BorderThickness),
@@ -5649,7 +4639,6 @@ function Window:_buildFooter()
         Parent = self._footer,
     })
 
-    -- Left: build info
     Theme.Create("TextLabel", {
         Name = "BuildInfo",
         Size = UDim2.new(0.33, 0, 1, 0),
@@ -5664,7 +4653,6 @@ function Window:_buildFooter()
         Parent = self._footer,
     })
 
-    -- Center: library name
     Theme.Create("TextLabel", {
         Name = "LibraryName",
         Size = UDim2.new(0.34, 0, 1, 0),
@@ -5679,7 +4667,6 @@ function Window:_buildFooter()
         Parent = self._footer,
     })
 
-    -- Right: toggle key hint
     local keyName = self._toggleKey.Name or "RightShift"
     Theme.Create("TextLabel", {
         Name = "ToggleHint",
@@ -5699,38 +4686,23 @@ end
 function Window:_setupToggleKey()
     local conn = UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
-        -- Don't toggle when a TextBox is focused
         if UserInputService:GetFocusedTextBox() then return end
-        if input.KeyCode == self._toggleKey then
-            self:Toggle()
-        end
+        if input.KeyCode == self._toggleKey then self:Toggle() end
     end)
     table.insert(self._connections, conn)
 end
 
 function Window:_selectTab(tab)
     if self._activeTab == tab then return end
-
-    -- Deselect previous tab
-    if self._activeTab then
-        self._activeTab:_setSelected(false)
-        -- Hide preview panel if previous tab had one, but new one doesn't
-    end
-
-    -- Select new tab
+    if self._activeTab then self._activeTab:_setSelected(false) end
     self._activeTab = tab
     tab:_setSelected(true)
-
-    -- Handle preview panel visibility
     self:_updatePreviewPanelVisibility()
 end
 
 function Window:_getOrCreatePreviewPanel()
-    if self._previewPanel then
-        return self._previewPanel
-    end
+    if self._previewPanel then return self._previewPanel end
 
-    -- Create preview panel frame
     self._previewPanel = Theme.Create("Frame", {
         Name = "PreviewPanel",
         Size = UDim2.new(0, Theme.Sizes.PreviewWidth, 1, 0),
@@ -5741,7 +4713,6 @@ function Window:_getOrCreatePreviewPanel()
         Parent = self._contentArea,
     })
 
-    -- Left border for preview panel
     Theme.Create("Frame", {
         Name = "PreviewBorder",
         Size = UDim2.new(0, Theme.Sizes.BorderThickness, 1, 0),
@@ -5756,10 +4727,8 @@ end
 
 function Window:_updatePreviewPanelVisibility()
     if not self._previewPanel then return end
-
     local showPreview = self._activeTab and self._activeTab._hasPreview
     self._previewPanel.Visible = showPreview
-
     if showPreview then
         self._contentInner.Size = UDim2.new(1, -Theme.Sizes.PreviewWidth, 1, 0)
     else
@@ -5769,19 +4738,16 @@ end
 
 function Window:_toggleMinimize()
     if self._minimized then
-        -- Restore
         self._minimized = false
         Animation.Tween(self._canvasGroup, {
             Size = UDim2.new(0, Theme.Sizes.WindowWidth, 0, self._fullHeight),
         }, 0.2)
-        -- Re-show body content
         task.delay(0.05, function()
             self._sidebar.Visible = true
             self._contentArea.Visible = true
             self._footer.Visible = true
         end)
     else
-        -- Minimize to header only
         self._minimized = true
         self._sidebar.Visible = false
         self._contentArea.Visible = false
@@ -5797,12 +4763,7 @@ function Window:CreateTab(config)
     tab._button.Parent = self._tabContainer
     tab._contentFrame.Parent = self._contentInner
     table.insert(self._tabs, tab)
-
-    -- Auto-select first tab
-    if #self._tabs == 1 then
-        self:_selectTab(tab)
-    end
-
+    if #self._tabs == 1 then self:_selectTab(tab) end
     return tab
 end
 
@@ -5816,20 +4777,14 @@ end
 function Window:Hide()
     if not self._visible then return end
     self._visible = false
-    local tween = Animation.Tween(self._canvasGroup, { GroupTransparency = 1 }, 0.2)
-    tween.Completed:Connect(function()
-        if not self._visible then
-            self._canvasGroup.Visible = false
-        end
+    local tw = Animation.Tween(self._canvasGroup, { GroupTransparency = 1 }, 0.2)
+    tw.Completed:Connect(function()
+        if not self._visible then self._canvasGroup.Visible = false end
     end)
 end
 
 function Window:Toggle()
-    if self._visible then
-        self:Hide()
-    else
-        self:Show()
-    end
+    if self._visible then self:Hide() else self:Show() end
 end
 
 function Window:SetNotificationManager(notifManager)
@@ -5837,30 +4792,20 @@ function Window:SetNotificationManager(notifManager)
 end
 
 function Window:Destroy()
-    -- Disconnect all connections
     for _, conn in ipairs(self._connections) do
         if typeof(conn) == "RBXScriptConnection" then
             conn:Disconnect()
         elseif type(conn) == "table" and conn.Disconnect then
-            if type(conn.Disconnect) == "function" then
-                conn:Disconnect()
-            else
-                conn.Disconnect()
-            end
+            if type(conn.Disconnect) == "function" then conn:Disconnect()
+            else conn.Disconnect() end
         elseif type(conn) == "function" then
             conn()
         end
     end
     self._connections = {}
-
-    -- Destroy all tabs
-    for _, tab in ipairs(self._tabs) do
-        tab:Destroy()
-    end
+    for _, tab in ipairs(self._tabs) do tab:Destroy() end
     self._tabs = {}
     self._activeTab = nil
-
-    -- Destroy the main frame
     if self._canvasGroup then
         self._canvasGroup:Destroy()
         self._canvasGroup = nil
@@ -5868,42 +4813,16 @@ function Window:Destroy()
 end
 
 return Window
-
 end)()
 
 -- [init]
 _M["init"] = (function()
---[[
-    init.lua — CSGOLib Main Library Entry Point
-    
-    The top-level module that ties together the entire CS:GO-style
-    Roblox UI library. Handles ScreenGui creation, optional authentication
-    via the Loader, Window instantiation, Config management, and
-    Notification integration.
-    
-    Usage:
-        local CSGOLib = require(path.to.CSGOLib)
-        local window = CSGOLib:CreateWindow({
-            Title = "My Script",
-            Version = "v2.0.0",
-            ToggleKey = Enum.KeyCode.RightShift,
-            Authentication = {
-                Enabled = true,
-                Title = "My Script",
-                Version = "v2.0.0",
-                VerifyCallback = function(key) return true end,
-                GetKeyURL = "https://example.com/getkey",
-                TestMode = false,
-            },
-        })
-]]
-
 local Players = game:GetService("Players")
 
-local Theme = _M["Theme"]
-local Loader = _M["Loader"]
-local Window = _M["Window"]
-local Config = _M["Utils_Config"]
+local Theme        = _M["Theme"]
+local Loader       = _M["Loader"]
+local Window       = _M["Window"]
+local Config       = _M["Utils_Config"]
 local Notification = _M["Components_Notification"]
 
 local Library = {}
@@ -5927,18 +4846,17 @@ function Library:CreateWindow(config)
     config = config or {}
     local self = setmetatable({}, Library)
 
-    self._title = config.Title or "CSGOLib"
-    self._version = config.Version or "v1.0.0"
+    self._title     = config.Title or "CSGOLib"
+    self._version   = config.Version or "v1.0.0"
     self._toggleKey = config.ToggleKey or Enum.KeyCode.RightShift
-    self._theme = config.Theme or "default"
+    self._theme     = config.Theme or "default"
 
-    self._screenGui = nil
-    self._window = nil
-    self._loader = nil
-    self._config = nil
+    self._screenGui           = nil
+    self._window              = nil
+    self._loader              = nil
+    self._config              = nil
     self._notificationManager = nil
 
-    -- Create the ScreenGui
     self._screenGui = Instance.new("ScreenGui")
     self._screenGui.Name = "CSGOLib"
     self._screenGui.ResetOnSpawn = false
@@ -5946,7 +4864,6 @@ function Library:CreateWindow(config)
     self._screenGui.IgnoreGuiInset = false
     self._screenGui.DisplayOrder = 100
 
-    -- Parent to CoreGui if possible, otherwise PlayerGui
     local ok = pcall(function()
         self._screenGui.Parent = game:GetService("CoreGui")
     end)
@@ -5960,28 +4877,20 @@ function Library:CreateWindow(config)
         end
     end
 
-    -- Create the Config manager
     self._config = Config.new("CSGOLib")
-
-    -- Create the Notification manager
     self._notificationManager = Notification.new(self._screenGui)
 
-    -- Create the Window structure immediately so tabs & controls can be attached
     self:_createWindow()
 
-    -- Authentication flow
     local authConfig = config.Authentication
     if authConfig and authConfig.Enabled then
-        -- Hide window until authentication succeeds
         if self._window and self._window._canvasGroup then
             self._window._canvasGroup.Visible = false
             self._window._visible = false
         end
         self:_startAuthFlow(authConfig)
     else
-        if self._window then
-            self._window:Show()
-        end
+        if self._window then self._window:Show() end
     end
 
     return self
@@ -5989,96 +4898,61 @@ end
 
 function Library:_startAuthFlow(authConfig)
     local loaderConfig = {
-        Title = authConfig.Title or self._title,
-        Version = authConfig.Version or self._version,
+        Title          = authConfig.Title or self._title,
+        Version        = authConfig.Version or self._version,
         VerifyCallback = authConfig.VerifyCallback,
-        GetKeyURL = authConfig.GetKeyURL,
-        TestMode = authConfig.TestMode or false,
+        GetKeyURL      = authConfig.GetKeyURL,
+        TestMode       = authConfig.TestMode or false,
         OnSuccess = function()
-            -- Reveal main window
-            if self._window then
-                self._window:Show()
-            end
+            if self._window then self._window:Show() end
             if self._notificationManager then
                 self._notificationManager:Notify({
-                    Message = "Authenticated successfully. Welcome!",
-                    Type = "success",
+                    Message  = "Authenticated successfully. Welcome!",
+                    Type     = "success",
                     Duration = 3,
                 })
             end
         end,
     }
-
     self._loader = Loader.new(loaderConfig)
     self._loader:Show()
 end
 
 function Library:_createWindow()
     self._window = Window.new(self._screenGui, {
-        Title = self._title,
-        Version = self._version,
+        Title     = self._title,
+        Version   = self._version,
         ToggleKey = self._toggleKey,
     })
-
-    -- Connect notification manager to window
     self._window:SetNotificationManager(self._notificationManager)
 end
 
 function Library:CreateTab(...)
-    if not self._window then
-        self:_createWindow()
-    end
+    if not self._window then self:_createWindow() end
     return self._window:CreateTab(...)
 end
 
 function Library:Notify(config)
     if not self._notificationManager then return end
     self._notificationManager:Notify({
-        Message = config.Message or "",
-        Type = config.Type or "info",
+        Message  = config.Message or "",
+        Type     = config.Type or "info",
         Duration = config.Duration or 3,
     })
 end
 
-function Library:GetConfig()
-    return self._config
-end
-
-function Library:GetWindow()
-    return self._window
-end
+function Library:GetConfig()  return self._config end
+function Library:GetWindow()  return self._window end
 
 function Library:Destroy()
-    -- Destroy the window
-    if self._window then
-        self._window:Destroy()
-        self._window = nil
-    end
-
-    -- Destroy the loader
-    if self._loader then
-        self._loader:Destroy()
-        self._loader = nil
-    end
-
-    -- Destroy the notification manager
-    if self._notificationManager then
-        self._notificationManager:Destroy()
-        self._notificationManager = nil
-    end
-
-    -- Destroy the config (no persistent state to clean)
+    if self._window              then self._window:Destroy()              self._window = nil              end
+    if self._loader              then self._loader:Destroy()              self._loader = nil              end
+    if self._notificationManager then self._notificationManager:Destroy() self._notificationManager = nil end
     self._config = nil
-
-    -- Destroy the ScreenGui
-    if self._screenGui then
-        self._screenGui:Destroy()
-        self._screenGui = nil
-    end
+    if self._screenGui then self._screenGui:Destroy() self._screenGui = nil end
 end
 
 return Library
-
 end)()
 
 return _M["init"]
